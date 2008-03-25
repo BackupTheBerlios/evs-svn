@@ -1,0 +1,13 @@
+The project provides the following ant targets.
+
+all
+
+	build all artifacts
+
+test
+
+	run unit tests
+
+clean
+
+	delete build artifacts

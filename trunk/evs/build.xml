@@ -1,0 +1,35 @@
+<project name="evs" default="all">
+	<property name="build.env" value="gerald"/>
+	<property file="build-${build.env}.properties"/>
+	
+	<property name="src.dir" value="src"/>
+	<property name="bin.dir" value="class"/>
+	<property name="doc.dir" value="doc"/>
+	<property name="javadoc.dir" value="${doc.dir}/api"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="bin.file" value="${ant.project.name}.jar"/>
+	
+	<target name="compile">
+		<mkdir dir="${bin.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${bin.dir}"/>
+	</target>
+	
+	<target name="javadoc">
+		<javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}" sourcefiles="*"/>
+	</target>
+	
+	<target name="dist">
+		<jar basedir="${bin.dir}" destfile="${bin.file}"/>
+	</target>
+	
+	<target name="all" depends="dist"/>
+	
+	<target name="test">
+		<junit/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${bin.dir}"/>
+		<delete file="${bin.file}"/>
+	</target>
+</project>
