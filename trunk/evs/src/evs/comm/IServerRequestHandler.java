@@ -8,5 +8,8 @@ package evs.comm;
  *
  */
 public interface IServerRequestHandler {
+	
+	public byte[] receiveRequest() throws RemotingException;
+	public void sendResponse(byte[] message) throws RemotingException;
 
 }

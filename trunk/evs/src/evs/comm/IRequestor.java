@@ -8,5 +8,14 @@ package evs.comm;
  *
  */
 public interface IRequestor {
+	
+	/**
+	 * 
+	 * @param object specifies the object to receive the request.
+	 * @param method specifies the method to invoke.
+	 * @param arguments specifies and provides the arguments, which are passed to the method.
+	 * @return the response.
+	 */
+	public Object invoke(IAbsoluteObjectReference object, Object method, Object... arguments);
 
 }
