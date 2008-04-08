@@ -1,35 +1,40 @@
 <project name="evs" default="all">
 	<property name="build.env" value="gerald"/>
 	<property file="build-${build.env}.properties"/>
+	<property name="version" value="0.1"/>
 	
 	<property name="src.dir" value="src"/>
 	<property name="bin.dir" value="class"/>
 	<property name="doc.dir" value="doc"/>
 	<property name="javadoc.dir" value="${doc.dir}/api"/>
 	<property name="dist.dir" value="dist"/>
-	<property name="bin.file" value="${ant.project.name}.jar"/>
+	<property name="bin.file" value="${dist.dir}/${ant.project.name}-${version}.jar"/>
+	<property name="javadoc.file" value="${dist.dir}/${ant.project.name}-${version}-doc.zip"/>
 	
-	<target name="compile">
+	<target name="compile" description="compile source files">
 		<mkdir dir="${bin.dir}"/>
 		<javac srcdir="${src.dir}" destdir="${bin.dir}"/>
 	</target>
 	
-	<target name="javadoc">
-		<javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}" sourcefiles="*"/>
+	<target name="javadoc" description="generate java documentation">
+		<javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}"/>
 	</target>
 	
-	<target name="dist">
+	<target name="dist" depends="compile,javadoc" description="pack distribution">
+		<mkdir dir="${dist.dir}"/>
 		<jar basedir="${bin.dir}" destfile="${bin.file}"/>
+		<zip basedir="${javadoc.dir}" destfile="${javadoc.file}"/>
 	</target>
 	
 	<target name="all" depends="dist"/>
 	
 	<target name="test">
-		<junit/>
+		<!-- junit -->
 	</target>
 	
-	<target name="clean">
+	<target name="clean" description="remove build artifacts">
 		<delete dir="${bin.dir}"/>
-		<delete file="${bin.file}"/>
+		<delete dir="${javadoc.dir}"/>
+		<delete dir="${dist.dir}"/>
 	</target>
 </project>
