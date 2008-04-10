@@ -15,7 +15,6 @@ public class AbsoluteObjectReference implements IAbsoluteObjectReference {
 	/* (non-Javadoc)
 	 * @see evs.comm.IAbsoluteObjectReference#getLocation()
 	 */
-	@Override
 	public ILocation getLocation() {
 		return location;
 	}
@@ -23,7 +22,6 @@ public class AbsoluteObjectReference implements IAbsoluteObjectReference {
 	/* (non-Javadoc)
 	 * @see evs.comm.IAbsoluteObjectReference#getObjectId()
 	 */
-	@Override
 	public IObjectId getObjectId() {
 		return objectId;
 	}
@@ -31,7 +29,6 @@ public class AbsoluteObjectReference implements IAbsoluteObjectReference {
 	/* (non-Javadoc)
 	 * @see evs.comm.IAbsoluteObjectReference#setLocation(evs.comm.ILocation)
 	 */
-	@Override
 	public void setLocation(ILocation location) {
 		this.location = location;
 	}
@@ -39,7 +36,6 @@ public class AbsoluteObjectReference implements IAbsoluteObjectReference {
 	/* (non-Javadoc)
 	 * @see evs.comm.IAbsoluteObjectReference#setObjectId(evs.comm.IObjectId)
 	 */
-	@Override
 	public void setObjectId(IObjectId objectId) {
 		this.objectId = objectId;
 	}

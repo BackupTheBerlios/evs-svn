@@ -29,7 +29,6 @@ public class MinimalRequestHandler implements IClientRequestHandler,
 	/* (non-Javadoc)
 	 * @see evs.comm.IClientRequestHandler#receiveResponse()
 	 */
-	@Override
 	public byte[] receiveResponse() throws RemotingException {
 		DataInput dataInput = new DataInputStream(socketInputStream);
 		int messageLength;
@@ -53,7 +52,6 @@ public class MinimalRequestHandler implements IClientRequestHandler,
 	/* (non-Javadoc)
 	 * @see evs.comm.IClientRequestHandler#sendRequest(byte[])
 	 */
-	@Override
 	public void sendRequest(byte[] message) throws RemotingException {
 		try {
 			socketOutputStream.write(message);
@@ -65,7 +63,6 @@ public class MinimalRequestHandler implements IClientRequestHandler,
 	/* (non-Javadoc)
 	 * @see evs.comm.IServerRequestHandler#receiveRequest()
 	 */
-	@Override
 	public byte[] receiveRequest() throws RemotingException {
 		// TODO Auto-generated method stub
 		return null;
@@ -74,7 +71,6 @@ public class MinimalRequestHandler implements IClientRequestHandler,
 	/* (non-Javadoc)
 	 * @see evs.comm.IServerRequestHandler#sendResponse(byte[])
 	 */
-	@Override
 	public void sendResponse(byte[] message) throws RemotingException {
 		// TODO Auto-generated method stub
 

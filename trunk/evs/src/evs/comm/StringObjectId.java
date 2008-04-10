@@ -3,7 +3,7 @@
  */
 package evs.comm;
 
-import java.nio.charset.Charset;
+import java.io.UnsupportedEncodingException;
 
 /**
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
@@ -13,23 +13,30 @@ public class StringObjectId implements IObjectId {
 	
 	private String id;
 	
-	private static final Charset UTF8 = Charset.forName("UFT-8");
+	private static final String UTF8 = "UFT-8";
 
 	/* (non-Javadoc)
 	 * @see evs.comm.IObjectId#toBytes()
 	 */
-	@Override
 	public byte[] toBytes() {
-		return id.getBytes(UTF8);
+		byte[] bytes;
+		try {
+			bytes = id.getBytes(UTF8);
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalArgumentException(e);
+		}
+		return bytes;
 	}
 
 	/* (non-Javadoc)
 	 * @see evs.comm.IObjectId#fromBytes(byte[])
 	 */
-	@Override
 	public void fromBytes(byte[] bytes) {
-		id = new String(bytes,UTF8);
+		try {
+			id = new String(bytes,UTF8);
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalArgumentException(e);
+		}
 	}
-	
 	
 }
