@@ -1,0 +1,213 @@
+\documentclass[a4paper]{article}
+\usepackage[english]{babel}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[latin1]{inputenc}
+\usepackage{lastpage}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{tabls} \setlength\tablinesep{3pt}
+\usepackage{url}
+
+\setlength{\parindent}{0mm}
+\renewcommand{\familydefault}{\sfdefault}
+
+\begin{document}
+\begin{titlepage}
+	\bigskip
+	\bigskip
+	\bigskip
+	\begin{center}
+		\includegraphics{images/informatik-tuwien.png}\\
+		\vspace{1cm}
+		\Huge{\textsf{\textbf{Design Methods for Distributed Systems\\}}}
+		\vspace{1cm}
+		\huge{\textsf{\textbf{Architecture\\}}}
+		\vspace{1cm}
+		\LARGE{\textsf{VU Entwurfsmethoden f\"{u}r Verteilte Systeme\\}}
+		\vspace{1cm}
+		\Large{\textsf{SS 2008\\}}
+	\end{center}
+	\bigskip
+	\begin{center}
+		\large{\textsf{\textbf{Group 69}}}
+	\end{center}
+	\begin{tabular}{llll}
+	\textsf{Martina Lindorfer} & \textsf{0626770} & \textsf{066937} & \url{e0626770@student.tuwien.ac.at}\\
+	\textsf{Florian Lukavsky} & \textsf{0325558} & \textsf{066937} & \url{e0325558@student.tuwien.ac.at}\\
+	\textsf{Daniel Priewasser} & \textsf{0626777} & \textsf{066937} & \url{e0626777@student.tuwien.ac.at}\\
+	\textsf{Gerald Scharitzer} & \textsf{0127228} & \textsf{066937} & \url{e0127228@student.tuwien.ac.at}\\
+	\textsf{Dirk Wallerstorfer} & \textsf{0626775} & \textsf{066937} & \url{e0626775@student.tuwien.ac.at}\\
+	\end{tabular}
+\end{titlepage}
+
+\clearpage
+
+\pagestyle{fancy}				
+\pagenumbering{arabic}				
+\cfoot{\small{\thepage\ / \pageref{LastPage}}}
+
+\tableofcontents
+
+\newpage
+\section{Logical View}
+
+\cite{zdun2008}
+
+\subsection{Common}
+\subsubsection{Marshaller}
+
+The marshaller translates objects into sequences of bytes and vice versa.
+
+\subsubsection{Interface Description}
+
+The interface description is the source for generating the interface for client proxies and remote objects.
+
+\subsection{Server}
+
+\subsubsection{Remote Object}
+
+\subsubsection{Invoker}
+
+The invoker calls the marshaller to translate request messages to invocations.
+
+\subsubsection{Server Request Handler}
+
+The server request handler receives request messages and dispatches them to the invokers.
+The server request handler sends response messages to the client request handlers.
+
+\subsubsection{Server Protocol Plugin}
+
+\subsection{Client}
+
+\subsubsection{Client Protocol Plugin}
+
+\subsubsection{Client Request Handler}
+
+\subsubsection{Requestor}
+
+\subsubsection{Client Proxy}
+
+\subsection{Protocols}
+
+\subsubsection{Communication Protocols}
+
+\paragraph{Minimal Communication Protocol}
+
+The minimal communication protocol has no protocol header and therefore transmits byte streams without interpreting them.
+The marshalling protocol is determined by the communication end points, which process only single protocols.
+The sender and receiver are determined by the communication end points.
+
+\paragraph{Typed Communication Protocol}
+
+The typed communication protocol prefixes the message body with a 4 byte header, which specifies the protocol of the message body.
+The sender and receiver are determined by the communication end points.
+
+\subsubsection{Marshalling Protocols}
+
+\paragraph{Binary Serialization Protocol}
+
+The invocation is analysed and serialized via reflection.
+
+\paragraph{Java Serialization Protocol}
+
+The invocation is serialized by the default Java object serialization.
+
+\paragraph{Axi2 Java Web Service Protocol}
+
+The marshaller translates invocations to SOAP messages and vice versa.
+
+\subsection{Configuration}
+
+\subsubsection{Properties}
+
+peer.local.host.name\\
+peer.local.ip.address\\
+peer.local.port\\
+
+\section{Development View}
+
+\subsection{Tools}
+
+	\begin{tabular}{|l|l|l|}
+	\hline
+	Development Environment & Eclipse 3.3.2 & \url{http://www.eclipse.org/}\\
+	\hline
+	Programming Language & Java 5 & \url{http://java.sun.com/}\\
+	\hline
+	Web Services & Axis2 & \url{http://ws.apache.org/axis2/}\\
+	\hline
+	Unit Tests & JUnit 4 & \url{http://junit.org/}\\
+	\hline
+	Build Tool & Ant 1.7 & \url{http://ant.apache.org/}\\
+	\hline
+	Version Control & Subclipse 1.2.4 & \url{http://subclipse.tigris.org/}\\
+	\hline
+	\end{tabular}
+
+\subsection{Naming Rules}
+
+The top level package is "evs" and there is only one level of sub packages.\\
+Interface names start with "I".\\
+Abstract class names start with "A".\\
+
+\subsection{Packages}
+
+	\begin{tabular}{|l|l|}
+	\hline
+	evs.comm & communcation framework\\
+	\hline
+	evs.entities & business entities\\
+	\hline
+	evs.junit & JUnit tests\\
+	\hline
+	\end{tabular}
+
+\section{Process View}
+
+Communication is based on Java sockets.
+
+\section{Physical View}
+
+\section{Scenarios}
+
+\subsection{Use Cases}
+
+\subsubsection{Create Customer}
+
+\subsubsection{Create Product}
+
+\subsubsection{Find Product}
+
+\subsubsection{Buy Product}
+
+\section{Rationale}
+
+\section{Extension 1}
+
+\subsection{Asynchronous Invocation}
+\subsubsection{Fire and Forget}
+\subsubsection{Poll Object}
+\subsubsection{Result Callback}
+
+\subsection{Interceptor Architecture}
+\subsubsection{Extension Patterns}
+
+\subsection{Activation of Distributed Objects}
+\subsubsection{Life Cycle Management Patterns}
+
+\subsection{Federation}
+\subsubsection{Configuration Groups}
+
+\section{Extension 2}
+\subsection{Dynamic Deployment}
+\subsubsection{Command}
+\subsubsection{Command Language}
+\subsubsection{Object System Layer}
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{bibliography}
+
+\end{document}
