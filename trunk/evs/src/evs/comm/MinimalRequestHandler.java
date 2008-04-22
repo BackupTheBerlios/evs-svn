@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 
@@ -19,6 +20,7 @@ public class MinimalRequestHandler implements IClientRequestHandler,
 		IServerRequestHandler {
 	
 	private Socket socket;
+	private ServerSocket serverSocket;
 	private InputStream socketInputStream;
 	private OutputStream socketOutputStream;
 	
@@ -79,7 +81,8 @@ public class MinimalRequestHandler implements IClientRequestHandler,
 	public void bind(SocketAddress localAddress) throws RemotingException {
 		try {
 			socket.bind(localAddress);
-			socketInputStream = socket.getInputStream();
+			serverSocket = new ServerSocket();
+			serverSocket.bind(localAddress);
 		} catch (IOException e) {
 			throw new RemotingException(e);
 		}
@@ -88,10 +91,14 @@ public class MinimalRequestHandler implements IClientRequestHandler,
 	public void connect(SocketAddress remoteAddress) throws RemotingException {
 		try {
 			socket.connect(remoteAddress);
+			socketInputStream = socket.getInputStream();
 			socketOutputStream = socket.getOutputStream();
 		} catch (IOException e) {
 			throw new RemotingException(e);
 		}
 	}
-
+	
+	public int getPort() {
+		return socket.getLocalPort();
+	}
 }
