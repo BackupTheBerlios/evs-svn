@@ -40,4 +40,12 @@ public class AbsoluteObjectReference implements IAbsoluteObjectReference {
 		this.objectId = objectId;
 	}
 
+	/* (non-Javadoc)
+	 * @see evs.comm.IAbsoluteObjectReference#isLocal()
+	 */
+	public boolean isLocal() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

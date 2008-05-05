@@ -8,5 +8,7 @@ package evs.comm;
  *
  */
 public interface IInvoker {
+	
+	byte[] invoke(byte[] message);
 
 }

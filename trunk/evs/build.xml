@@ -16,6 +16,10 @@
 		<javac srcdir="${src.dir}" destdir="${bin.dir}" compiler="javac1.5"/>
 	</target>
 	
+	<target name="latex">
+		<exec executable="make" dir="${doc.dir}/artifacts"/>
+	</target>
+	
 	<target name="javadoc" description="generate java documentation">
 		<javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}"/>
 	</target>
@@ -33,6 +37,9 @@
 	</target>
 	
 	<target name="clean" description="remove build artifacts">
+		<exec executable="make" dir="${doc.dir}/artifacts">
+			<arg value="clean"/>
+		</exec>
 		<delete dir="${bin.dir}"/>
 		<delete dir="${javadoc.dir}"/>
 		<delete dir="${dist.dir}"/>

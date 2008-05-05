@@ -9,10 +9,15 @@ package evs.comm;
  */
 public interface IAbsoluteObjectReference {
 	
-	public ILocation getLocation();
-	public void setLocation(ILocation location);
+	ILocation getLocation();
+	void setLocation(ILocation location);
 	
-	public IObjectId getObjectId();
-	public void setObjectId(IObjectId objectId);
-
+	IObjectId getObjectId();
+	void setObjectId(IObjectId objectId);
+	
+	/**
+	 * @return true if this reference points to a local object.
+	 */
+	boolean isLocal();
+	
 }

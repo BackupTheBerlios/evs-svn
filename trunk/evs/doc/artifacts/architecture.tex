@@ -51,80 +51,7 @@
 \tableofcontents
 
 \newpage
-\section{Logical View}
-
-\cite{zdun2008}
-
-\subsection{Common}
-\subsubsection{Marshaller}
-
-The marshaller translates objects into sequences of bytes and vice versa.
-
-\subsubsection{Interface Description}
-
-The interface description is the source for generating the interface for client proxies and remote objects.
-
-\subsection{Server}
-
-\subsubsection{Remote Object}
-
-\subsubsection{Invoker}
-
-The invoker calls the marshaller to translate request messages to invocations.
-
-\subsubsection{Server Request Handler}
-
-The server request handler receives request messages and dispatches them to the invokers.
-The server request handler sends response messages to the client request handlers.
-
-\subsubsection{Server Protocol Plugin}
-
-\subsection{Client}
-
-\subsubsection{Client Protocol Plugin}
-
-\subsubsection{Client Request Handler}
-
-\subsubsection{Requestor}
-
-\subsubsection{Client Proxy}
-
-\subsection{Protocols}
-
-\subsubsection{Communication Protocols}
-
-\paragraph{Minimal Communication Protocol}
-
-The minimal communication protocol has no protocol header and therefore transmits byte streams without interpreting them.
-The marshalling protocol is determined by the communication end points, which process only single protocols.
-The sender and receiver are determined by the communication end points.
-
-\paragraph{Typed Communication Protocol}
-
-The typed communication protocol prefixes the message body with a 4 byte header, which specifies the protocol of the message body.
-The sender and receiver are determined by the communication end points.
-
-\subsubsection{Marshalling Protocols}
-
-\paragraph{Binary Serialization Protocol}
-
-The invocation is analysed and serialized via reflection.
-
-\paragraph{Java Serialization Protocol}
-
-The invocation is serialized by the default Java object serialization.
-
-\paragraph{Axi2 Java Web Service Protocol}
-
-The marshaller translates invocations to SOAP messages and vice versa.
-
-\subsection{Configuration}
-
-\subsubsection{Properties}
-
-peer.local.host.name\\
-peer.local.ip.address\\
-peer.local.port\\
+\include{logical-view}
 
 \section{Development View}
 
@@ -209,6 +136,18 @@ The request handlers
 \subsubsection{Command}
 \subsubsection{Command Language}
 \subsubsection{Object System Layer}
+
+\section{Abbreviations and Acronyms}
+
+	\begin{tabular}{|l|l|}
+	\hline
+	AOR & Absolute Object Reference\\
+	\hline
+	IP & Internet Protocol\\
+	\hline
+	TCP & Transmission Control Protocol\\
+	\hline
+	\end{tabular}
 
 \newpage
 \bibliographystyle{plain}

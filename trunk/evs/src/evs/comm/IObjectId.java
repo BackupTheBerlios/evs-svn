@@ -4,12 +4,13 @@
 package evs.comm;
 
 /**
+ * identifies an instance with the local context.
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
  *
  */
 public interface IObjectId {
 	
-	public byte[] toBytes();
-	public void fromBytes(byte[] bytes);
+	byte[] toBytes();
+	void fromBytes(byte[] bytes);
 	
 }
