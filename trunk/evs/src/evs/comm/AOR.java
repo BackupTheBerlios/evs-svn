@@ -7,41 +7,41 @@ package evs.comm;
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
  *
  */
-public class AbsoluteObjectReference implements IAbsoluteObjectReference {
+public class AOR implements IAOR {
 	
 	private ILocation location;
 	private IObjectId objectId;
 
 	/* (non-Javadoc)
-	 * @see evs.comm.IAbsoluteObjectReference#getLocation()
+	 * @see evs.comm.IAOR#getLocation()
 	 */
 	public ILocation getLocation() {
 		return location;
 	}
 
 	/* (non-Javadoc)
-	 * @see evs.comm.IAbsoluteObjectReference#getObjectId()
+	 * @see evs.comm.IAOR#getObjectId()
 	 */
 	public IObjectId getObjectId() {
 		return objectId;
 	}
 
 	/* (non-Javadoc)
-	 * @see evs.comm.IAbsoluteObjectReference#setLocation(evs.comm.ILocation)
+	 * @see evs.comm.IAOR#setLocation(evs.comm.ILocation)
 	 */
 	public void setLocation(ILocation location) {
 		this.location = location;
 	}
 
 	/* (non-Javadoc)
-	 * @see evs.comm.IAbsoluteObjectReference#setObjectId(evs.comm.IObjectId)
+	 * @see evs.comm.IAOR#setObjectId(evs.comm.IObjectId)
 	 */
 	public void setObjectId(IObjectId objectId) {
 		this.objectId = objectId;
 	}
 
 	/* (non-Javadoc)
-	 * @see evs.comm.IAbsoluteObjectReference#isLocal()
+	 * @see evs.comm.IAOR#isLocal()
 	 */
 	public boolean isLocal() {
 		// TODO Auto-generated method stub

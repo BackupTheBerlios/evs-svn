@@ -1,7 +1,7 @@
 /**
  * 
  */
-package evs.comm;
+package evs.main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +9,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
+
+import evs.comm.BasicRequestHandler;
+import evs.comm.RemotingException;
 
 /**
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
@@ -24,9 +27,9 @@ public class Peer implements Runnable {
 	private PrintStream stderr;
 	private boolean running;
 	private boolean verbose;
-	private MinimalRequestHandler requestHandler;
+	private BasicRequestHandler requestHandler;
+	private Thread listener;
 	
-	private static final int SUCCESS = 0;
 	private static final int WARNING = 1;
 	private static final int ERROR   = 2;
 	private static final String PROMPT = "> ";
@@ -53,8 +56,12 @@ public class Peer implements Runnable {
 	}
 	
 	public void run() {
-		requestHandler = new MinimalRequestHandler();
+		requestHandler = new BasicRequestHandler();
+		listener = new Thread(requestHandler);
+		
 		processArguments();
+		if (exitCode > WARNING)
+			return;
 
 		if (verbose) {
 			processCommand("status");
@@ -63,7 +70,7 @@ public class Peer implements Runnable {
 		InputStreamReader inputStreamReader = new InputStreamReader(stdin);
 		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 		String command;
-		System.out.print(PROMPT);
+		stdout.print(PROMPT);
 		try {
 			command = bufferedReader.readLine();
 		} catch (IOException e) {
@@ -75,7 +82,7 @@ public class Peer implements Runnable {
 		while (running && command != null) {
 			processCommand(command);
 			if (running) {
-				System.out.print(PROMPT);
+				stdout.print(PROMPT);
 				try {
 					command = bufferedReader.readLine();
 				} catch (IOException e) {
@@ -136,15 +143,24 @@ public class Peer implements Runnable {
 		int x = command.indexOf('=');
 		if (x == -1) { // keyword only
 			if (command.equals("help")) {
-				stdout.println("port=<portNumber>");
+				stdout.println("connect=<remotePort>");
+				stdout.println("  connect the peer to this port");
+				stdout.println("listen");
+				stdout.println("  start listening for incoming requests");
+				stdout.println("port=<localPort>");
 				stdout.println("  bind the peer to this port");
 				stdout.println("quit");
 				stdout.println("  terminate the peer");
+				stdout.println("send=<message>");
+				stdout.println("  send the message to the remote peer");
 				stdout.println("status");
 				stdout.println("  show the status");
+			} else if (command.equals("listen")) {
+				listen();
 			} else if (command.equals("quit")) {
 				running = false;
 			} else if (command.equals("status")) {
+				stdout.println("listening: " + listener.isAlive());
 				stdout.println("port: " + requestHandler.getPort());
 			} else {
 				stdout.println("The command was invalid.");
@@ -167,6 +183,8 @@ public class Peer implements Runnable {
 				} catch (RemotingException e) {
 					stdout.println(e.getMessage());
 				}
+			} else if (key.equals("send")) {
+				sendTextMessage(value);
 			} else {
 				stdout.println("The command was invalid.");
 				stdout.println("Enter \"help\" for help.");
@@ -194,4 +212,17 @@ public class Peer implements Runnable {
 		}
 		setPort(portNumber);
 	}
+	
+	private void sendTextMessage(String message) {
+		try {
+			requestHandler.send(null,message.getBytes());
+		} catch (RemotingException e) {
+			e.printStackTrace(stderr);
+		}
+	}
+	
+	private void listen() {
+		listener.start();
+	}
+	
 }

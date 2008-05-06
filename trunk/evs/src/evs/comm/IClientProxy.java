@@ -8,5 +8,8 @@ package evs.comm;
  *
  */
 public interface IClientProxy {
+	
+	IAOR getAOR();
+	void setAOR(IAOR aor);
 
 }

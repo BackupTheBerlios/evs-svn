@@ -4,10 +4,11 @@
 package evs.comm;
 
 /**
+ * the interface for absolute object references.
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
  *
  */
-public interface IAbsoluteObjectReference {
+public interface IAOR {
 	
 	ILocation getLocation();
 	void setLocation(ILocation location);

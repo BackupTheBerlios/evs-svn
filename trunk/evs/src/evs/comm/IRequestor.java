@@ -16,6 +16,6 @@ public interface IRequestor {
 	 * @param arguments specifies and provides the arguments, which are passed to the method.
 	 * @return the response. This is always null for asynchronous requests.
 	 */
-	public Object invoke(IAbsoluteObjectReference object, Object method, Object... arguments);
+	public Object invoke(IAOR object, Object method, Object... arguments);
 
 }

@@ -4,12 +4,12 @@
 package evs.comm;
 
 /**
- * @author Gerald Scharitzer
+ * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
  *
  */
 public interface IServerRequestHandler {
 	
-	public byte[] receiveRequest() throws RemotingException;
-	public void sendResponse(byte[] message) throws RemotingException;
+	byte[] receiveRequest() throws RemotingException;
+	void sendResponse(byte[] message) throws RemotingException;
 
 }
