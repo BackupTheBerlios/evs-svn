@@ -11,7 +11,7 @@ import java.io.PrintStream;
 import java.net.InetSocketAddress;
 
 import evs.comm.BasicRequestHandler;
-import evs.comm.RemotingException;
+import evs.exception.RemotingException;
 
 /**
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)

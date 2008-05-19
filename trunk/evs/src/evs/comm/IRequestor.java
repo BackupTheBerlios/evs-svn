@@ -3,11 +3,22 @@
  */
 package evs.comm;
 
+import evs.exception.RemotingException;
+import evs.exception.RequestException;
+
 /**
  * @author Gerald Scharitzer
  *
  */
 public interface IRequestor {
+	
+	/**
+	 * @param object specifies the invocation object containing the object id, method + parameters
+	 * @param isVoid specifies whether the client expects a response
+	 * @return the response. This is always null for asynchronous requests.
+	 */
+	public Object invoke(InvocationObject object, boolean isVoid) throws RemotingException;
+	
 	
 	/**
 	 * 
@@ -16,6 +27,8 @@ public interface IRequestor {
 	 * @param arguments specifies and provides the arguments, which are passed to the method.
 	 * @return the response. This is always null for asynchronous requests.
 	 */
-	public Object invoke(IAOR object, Object method, Object... arguments);
+	//public Object invoke(IAOR object, Object method, Object... arguments);
+
+
 
 }

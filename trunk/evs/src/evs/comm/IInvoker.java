@@ -9,6 +9,6 @@ package evs.comm;
  */
 public interface IInvoker {
 	
-	byte[] invoke(byte[] message);
+	byte[] invoke(byte[] message) throws evs.exception.RemotingException;
 
 }

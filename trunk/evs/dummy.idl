@@ -1,0 +1,10 @@
+PACKAGE blub.blub.blub
+CLASS dummy[
+integer tada
+void foo(integer a, integer b) THROWS dummyException, IOException
+integer bar() THROWS dummyException
+blablablub(integer c)
+]
+EXCEPTION dummyException[
+integer count
+]

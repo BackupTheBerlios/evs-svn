@@ -9,9 +9,17 @@
 \usepackage{rotating}
 \usepackage{tabls} \setlength\tablinesep{3pt}
 \usepackage{url}
+\usepackage{float}
+% new float environment
 
 \setlength{\parindent}{0mm}
 \renewcommand{\familydefault}{\sfdefault}
+
+% ------------------------------     CODE ENVIRONMENT
+\floatstyle{boxed}
+\newfloat{code}{htp}{lop}
+\floatname{code}{Listing}
+\DeclareFontShape{OT1}{cmtt}{bx}{n}{<4><5><6><7><8><9><10><10.95><12><14.4><17.28><20.74><24.88>cmttb10}{}
 
 \begin{document}
 \begin{titlepage}
@@ -29,7 +37,7 @@
 		\vspace{1cm}
 		\Large{\textsf{SS 2008\\}}
 	\end{center}
-	\bigskip
+	\vfill
 	\begin{center}
 		\large{\textsf{\textbf{Group 69}}}
 	\end{center}
@@ -44,11 +52,18 @@
 
 \clearpage
 
+
 \pagestyle{fancy}				
 \pagenumbering{arabic}				
-\cfoot{\small{\thepage\ / \pageref{LastPage}}}
-
+\lhead{\small{\textbf{Design Methods for Distributed Systems: } Architecture}}
+\rhead{\small{Page \thepage/\pageref{LastPage}}}
+\fancyfoot{}
 \tableofcontents
+
+
+
+
+
 
 \newpage
 \include{logical-view}

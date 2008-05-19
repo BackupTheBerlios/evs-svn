@@ -8,8 +8,31 @@
 The marshaller translates objects into sequences of bytes and vice versa.
 
 \subsubsection{Interface Description}
+The interface description is the source for generating the interface for client proxies and remote objects. For the purpose of defining such an interface description the syntax for a simple IDL (Interface Description Language) was created and a corresponding parser was developed. This syntax allows the definition of classes and exceptions in the following form:
 
-The interface description is the source for generating the interface for client proxies and remote objects.
+\begin{code}
+\begin{verbatim}
+PACKAGE bla.bla.blub
+CLASS Dummy[
+Integer tada
+void foo(integer a, integer b) THROWS dummyException, IOException
+Integer bar() THROWS dummyException
+blablablub(Integer c)
+]
+EXCEPTION DummyException[
+Integer count
+]
+\end{verbatim}
+\end{code}
+
+The IDL-Parser \texttt{evs.idl.SimpleIDLParser} analyses the file and generates Client and Server Stubs for the specified application. A Code-Generator for Java was implemented in \texttt{evs.idl.JavaCodeGenerator}, which generates the following files based on the interface definition:
+
+\begin{itemize}\itemsep0pt
+\item An interface for the operations provided by the Remote Object
+\item A ClientProxy implementing that interface for the client-side
+\item An Invoker implementing that interface for the server-side
+\item Custom-Type Exceptions
+\end{itemize}
 
 \subsubsection{Absolute Object Reference}
 

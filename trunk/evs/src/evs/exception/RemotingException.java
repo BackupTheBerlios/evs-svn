@@ -1,7 +1,7 @@
 /**
  * 
  */
-package evs.comm;
+package evs.exception;
 
 /**
  * wraps exceptions thrown by the communication layer.
