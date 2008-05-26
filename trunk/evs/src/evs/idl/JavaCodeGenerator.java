@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import evs.comm.exception.RemotingException;
-import evs.comm.impl.InvocationStyle;
-import evs.comm.interfaces.IAOR;
+import evs.core.InvocationStyle;
+import evs.exception.RemotingException;
+import evs.interfaces.IAOR;
 
 public class JavaCodeGenerator {
 
