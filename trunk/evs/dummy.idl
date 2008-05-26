@@ -1,10 +1,8 @@
-PACKAGE blub.blub.blub
-CLASS dummy[
-integer tada
-void foo(integer a, integer b) THROWS dummyException, IOException
-integer bar() THROWS dummyException
-blablablub(integer c)
+PACKAGE evs.example.test
+CLASS Dummy[
+Integer counter
+void testCall(Integer a) THROWS DummyException
+Integer getCounter() THROWS DummyException
 ]
-EXCEPTION dummyException[
-integer count
+EXCEPTION DummyException[
 ]
