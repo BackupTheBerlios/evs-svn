@@ -10,8 +10,8 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 
-import evs.comm.BasicRequestHandler;
-import evs.exception.RemotingException;
+import evs.comm.exception.RemotingException;
+import evs.comm.impl.BasicRequestHandler;
 
 /**
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)

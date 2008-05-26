@@ -27,6 +27,7 @@ public class SimpleIDLParser {
 	
 	private static List<IIDLClass> classes = new ArrayList<IIDLClass>();
 	private static List<IIDLException> exceptions = new ArrayList<IIDLException>();
+	private static String packageName;
 	
 	private static void usage(){
 		System.out.println("[x] Usage: IDLParser file.idl");
@@ -44,7 +45,7 @@ public class SimpleIDLParser {
 			throw new ParseException("package expected", lineNumber);
 		}
 
-		String packageName = wordArray[1];
+		packageName = wordArray[1];
 		System.out.println("[*] FOUND PACKAGE: " + packageName);
 		
 		//read classes and exceptions
@@ -139,7 +140,7 @@ public class SimpleIDLParser {
 				String[] exceptions = exceptionList.split(",");
 				for(String s: exceptions){
 					s = s.trim();
-					newMethod.addException(s);
+					newMethod.addException(packageName + ".exception." + s);
 				}
 			}
 		} catch(IndexOutOfBoundsException ex){
