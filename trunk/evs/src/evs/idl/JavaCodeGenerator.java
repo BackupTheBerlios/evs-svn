@@ -4,11 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
-
-import evs.core.InvocationStyle;
-import evs.exception.RemotingException;
-import evs.interfaces.IAOR;
 
 public class JavaCodeGenerator {
 

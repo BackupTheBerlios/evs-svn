@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 
-import evs.core.BasicRequestHandler;
+import evs.comm.BasicRequestHandler;
 import evs.exception.RemotingException;
 
 /**

@@ -4,7 +4,6 @@ import evs.core.Common;
 import evs.core.LifecycleStrategy;
 import evs.core.ObjectReference;
 import evs.interfaces.IObjectReference;
-import evsbsp.IDummyOperations;
 import evsbsp.server.Dummy;
 import evsbsp.server.DummyInvoker;
 
