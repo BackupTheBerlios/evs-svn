@@ -12,6 +12,7 @@ import evs.exception.RemotingException;
 import evs.interfaces.IInterceptor;
 import evs.interfaces.IInvocationObject;
 
+
 public class DummyInvoker extends AInvoker{
 
 	static private final HashMap<String, Integer> operations = new HashMap<String, Integer>();
