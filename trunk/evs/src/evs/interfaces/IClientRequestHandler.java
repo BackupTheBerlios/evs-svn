@@ -15,7 +15,7 @@ import evs.exception.RemotingException;
 public interface IClientRequestHandler {
 
 	/**
-	 * 
+	 * Send the message and wait for the response.
 	 * @param address the address of the request handler.
 	 * @param message the bytes of the serialized message.
 	 * @return the response message, which is always null for void or asynchronous methods.

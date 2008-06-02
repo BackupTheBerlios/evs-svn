@@ -12,6 +12,8 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import evs.exception.RemotingException;
 import evs.interfaces.IClientRequestHandler;
@@ -25,6 +27,7 @@ import evs.interfaces.IServerRequestHandler;
 public class BasicRequestHandler implements IClientRequestHandler,
 		IServerRequestHandler, Runnable {
 	
+	private Map<SocketAddress,Socket> outGoingConnections;
 	private Socket socket;
 	private ServerSocket serverSocket;
 	private InputStream socketInputStream;
@@ -33,6 +36,7 @@ public class BasicRequestHandler implements IClientRequestHandler,
 	
 	public BasicRequestHandler() {
 		socket = new Socket();
+		outGoingConnections = new HashMap<SocketAddress,Socket>();
 	}
 
 	/* (non-Javadoc)
@@ -59,6 +63,16 @@ public class BasicRequestHandler implements IClientRequestHandler,
 	}
 
 	public byte[] send(SocketAddress address, byte[] message) throws RemotingException {
+		Socket socket = outGoingConnections.get(address);
+		if (socket == null) { // create new connection
+			socket = new Socket();
+			try {
+				socket.connect(address);
+			} catch (IOException e) {
+				throw new RemotingException(e);
+			}
+			outGoingConnections.put(address,socket);
+		}
 		OutputStream outputStream;
 		try {
 			outputStream = socket.getOutputStream();
@@ -68,6 +82,7 @@ public class BasicRequestHandler implements IClientRequestHandler,
 		DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 		try {
 			dataOutputStream.writeInt(message.length);
+			dataOutputStream.write(message);
 		} catch (IOException e) {
 			throw new RemotingException(e);
 		}
@@ -132,13 +147,20 @@ public class BasicRequestHandler implements IClientRequestHandler,
 			int length;
 			try {
 				length = dataInputStream.readInt();
-				socket.close();
+				byte[] buffer = new byte[length];
+				dataInputStream.readFully(buffer);
+				String message = new String(buffer);
+				System.out.println("message = " + message);
+				OutputStream outputStream = socket.getOutputStream();
+				DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+				dataOutputStream.writeInt(length);
+				dataOutputStream.write(buffer);
+				dataOutputStream.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return;
 			}
-			System.out.println("length = " + length);
 		}
 	}
 	
