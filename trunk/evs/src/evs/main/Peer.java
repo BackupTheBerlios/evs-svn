@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.net.InetSocketAddress;
 
 import evs.core.BasicRequestHandler;
+import evs.core.ClientRequestHandler;
 import evs.exception.RemotingException;
 
 /**
@@ -27,8 +28,10 @@ public class Peer implements Runnable {
 	private PrintStream stderr;
 	private boolean running;
 	private boolean verbose;
+	private ClientRequestHandler clientRequestHandler;
 	private BasicRequestHandler requestHandler;
 	private Thread listener;
+	private InetSocketAddress remoteAddress;
 	
 	private static final int WARNING = 1;
 	private static final int ERROR   = 2;
@@ -57,6 +60,7 @@ public class Peer implements Runnable {
 	
 	public void run() {
 		requestHandler = new BasicRequestHandler();
+		clientRequestHandler = new ClientRequestHandler();
 		listener = new Thread(requestHandler);
 		
 		processArguments();
@@ -171,12 +175,7 @@ public class Peer implements Runnable {
 			String value = command.substring(x+1);
 			if (key.equals("connect")) {
 				int port = Integer.parseInt(value);
-				InetSocketAddress remoteAddress = new InetSocketAddress(port);
-				try {
-					requestHandler.connect(remoteAddress);
-				} catch (RemotingException e) {
-					stdout.println(e.getMessage());
-				}
+				remoteAddress = new InetSocketAddress(port);
 			} else if (key.equals("port")) {
 				try {
 					setPort(value);
@@ -184,7 +183,7 @@ public class Peer implements Runnable {
 					stdout.println(e.getMessage());
 				}
 			} else if (key.equals("send")) {
-				sendTextMessage(value);
+				stdout.println(sendTextMessage(value));
 			} else {
 				stdout.println("The command was invalid.");
 				stdout.println("Enter \"help\" for help.");
@@ -213,12 +212,15 @@ public class Peer implements Runnable {
 		setPort(portNumber);
 	}
 	
-	private void sendTextMessage(String message) {
+	private String sendTextMessage(String message) {
+		byte[] response;
 		try {
-			requestHandler.send(null,message.getBytes());
+			response = clientRequestHandler.send(remoteAddress,message.getBytes());
 		} catch (RemotingException e) {
 			e.printStackTrace(stderr);
+			return null;
 		}
+		return new String(response);
 	}
 	
 	private void listen() {
