@@ -3,7 +3,6 @@
  */
 package evs.core;
 
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -29,23 +28,23 @@ public class ClientRequestHandler implements IClientRequestHandler {
 		connections = new HashMap<SocketAddress,Socket>();
 	}
 
-	public byte[] receiveResponse() throws RemotingException {
+	public byte[] receive() throws RemotingException {
 		return null; // TODO implement
 	}
 
-	public byte[] send(SocketAddress address, byte[] message) throws RemotingException {
-		Socket socket = sendRequest(address,message);
+	public byte[] send(SocketAddress address, byte[] request) throws RemotingException {
+		Socket socket = sendRequest(address,request);
 		return receiveResponse(socket);
 	}
 	
 	/**
 	 * 
 	 * @param address the address of the request handler.
-	 * @param message the bytes of the serialized message.
-	 * @return the socket, which was used to send the message and will contain the response.
+	 * @param request the bytes of the serialized request.
+	 * @return the socket, which was used to send the request and will contain the response.
 	 * @throws RemotingException
 	 */
-	private Socket sendRequest(SocketAddress address, byte[] message) throws RemotingException {
+	private Socket sendRequest(SocketAddress address, byte[] request) throws RemotingException {
 		Socket socket = connections.get(address);
 		if (socket == null) { // create new connection
 			socket = new Socket();
@@ -64,8 +63,9 @@ public class ClientRequestHandler implements IClientRequestHandler {
 		}
 		DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 		try {
-			dataOutputStream.writeInt(message.length);
-			dataOutputStream.write(message);
+			dataOutputStream.writeInt(request.length);
+			dataOutputStream.write(request);
+			dataOutputStream.flush();
 		} catch (IOException e) {
 			throw new RemotingException(e);
 		}
@@ -85,10 +85,10 @@ public class ClientRequestHandler implements IClientRequestHandler {
 		} catch (IOException e) {
 			throw new RemotingException(e);
 		}
-		DataInput dataInput = new DataInputStream(inputStream);
+		DataInputStream dataInputStream = new DataInputStream(inputStream);
 		int messageLength;
 		try {
-			messageLength = dataInput.readInt();
+			messageLength = dataInputStream.readInt();
 		} catch (IOException e) {
 			throw new RemotingException(e);
 		}
@@ -97,7 +97,7 @@ public class ClientRequestHandler implements IClientRequestHandler {
 		}
 		byte[] response = new byte[messageLength];
 		try {
-			dataInput.readFully(response);
+			dataInputStream.readFully(response);
 		} catch (IOException e) {
 			throw new RemotingException(e);
 		}

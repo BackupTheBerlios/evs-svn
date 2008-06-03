@@ -11,7 +11,7 @@ import evs.interfaces.IInterceptorRegistry;
 import evs.interfaces.IInvocationDispatcher;
 import evs.interfaces.ILifecycleManager;
 import evs.interfaces.IMarshaller;
-import evs.interfaces.IServerRequestHandler;
+import evs.interfaces.IServerConnectionHandler;
 
 public class Common {
 
@@ -20,8 +20,8 @@ public class Common {
 	private static String defaultFile = "conf/evs.properties";
 	
 	//REFERENCES
-	private static IClientRequestHandler clientRequesthandler = null;
-	private static IServerRequestHandler serverRequesthandler = null;
+	private static IClientRequestHandler clientRequestHandler = null;
+	private static IServerConnectionHandler serverConnectionHandler = null;
 	private static IInterceptorRegistry serverInterceptors = null;
 	private static IInterceptorRegistry clientInterceptors = null;
 	private static IMarshaller marshaller = null;
@@ -73,15 +73,15 @@ public class Common {
 	//-------------------------------------------------------------------------------------------------------
 	
 	public static IClientRequestHandler getClientRequesthandler(){
-		if(clientRequesthandler == null)
-			clientRequesthandler = new BasicRequestHandler();
-		return clientRequesthandler;
+		if(clientRequestHandler == null)
+			clientRequestHandler = new ClientRequestHandler();
+		return clientRequestHandler;
 	}
 	
-	public static IServerRequestHandler getServerRequesthandler(){
-		if(serverRequesthandler == null)
-			serverRequesthandler = new BasicRequestHandler();
-		return serverRequesthandler;
+	public static IServerConnectionHandler getServerConnectionHandler(){
+		if (serverConnectionHandler == null)
+			serverConnectionHandler = new ServerConnectionHandler();
+		return serverConnectionHandler;
 	}
 	
 	public static IMarshaller getMarshaller(){

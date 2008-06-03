@@ -15,13 +15,19 @@ import evs.exception.RemotingException;
 public interface IClientRequestHandler {
 
 	/**
-	 * Send the message and wait for the response.
+	 * Send the request and wait to receive the response.
 	 * @param address the address of the request handler.
-	 * @param message the bytes of the serialized message.
-	 * @return the response message, which is always null for void or asynchronous methods.
+	 * @param request the bytes of the serialized request.
+	 * @return the bytes of the serialized response.
 	 * @throws RemotingException
 	 */
-	byte[] send(SocketAddress address, byte[] message) throws RemotingException;
-	byte[] receiveResponse() throws RemotingException;
+	byte[] send(SocketAddress address, byte[] request) throws RemotingException;
+	
+	/**
+	 * Wait to receive the response.
+	 * @return the bytes of the serialized response.
+	 * @throws RemotingException
+	 */
+	byte[] receive() throws RemotingException;
 	
 }

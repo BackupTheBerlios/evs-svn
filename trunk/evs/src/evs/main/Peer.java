@@ -10,9 +10,11 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 
-import evs.core.BasicRequestHandler;
 import evs.core.ClientRequestHandler;
+import evs.core.ServerConnectionHandler;
 import evs.exception.RemotingException;
+import evs.interfaces.IClientRequestHandler;
+import evs.interfaces.IServerConnectionHandler;
 
 /**
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
@@ -28,8 +30,8 @@ public class Peer implements Runnable {
 	private PrintStream stderr;
 	private boolean running;
 	private boolean verbose;
-	private ClientRequestHandler clientRequestHandler;
-	private BasicRequestHandler requestHandler;
+	private IClientRequestHandler clientRequestHandler;
+	private IServerConnectionHandler serverConnectionHandler;
 	private Thread listener;
 	private InetSocketAddress remoteAddress;
 	
@@ -59,9 +61,9 @@ public class Peer implements Runnable {
 	}
 	
 	public void run() {
-		requestHandler = new BasicRequestHandler();
+		serverConnectionHandler = new ServerConnectionHandler();
 		clientRequestHandler = new ClientRequestHandler();
-		listener = new Thread(requestHandler);
+		listener = new Thread(serverConnectionHandler);
 		
 		processArguments();
 		if (exitCode > WARNING)
@@ -165,7 +167,7 @@ public class Peer implements Runnable {
 				running = false;
 			} else if (command.equals("status")) {
 				stdout.println("listening: " + listener.isAlive());
-				stdout.println("port: " + requestHandler.getPort());
+				stdout.println("port: " + serverConnectionHandler.getPort());
 			} else {
 				stdout.println("The command was invalid.");
 				stdout.println("Enter \"help\" for help.");
@@ -199,7 +201,7 @@ public class Peer implements Runnable {
 	
 	private void setPort(int port) throws RemotingException {
 		InetSocketAddress localAddress = new InetSocketAddress(port);
-		requestHandler.bind(localAddress);
+		serverConnectionHandler.bind(localAddress);
 	}
 	
 	private void setPort(String port) throws RemotingException {

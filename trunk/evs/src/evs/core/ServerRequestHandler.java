@@ -3,83 +3,89 @@
  */
 package evs.core;
 
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 
-import evs.exception.RemotingException;
-import evs.interfaces.IClientRequestHandler;
 import evs.interfaces.IServerRequestHandler;
-
 
 /**
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
  *
  */
-public class ServerRequestHandler implements IServerRequestHandler, Runnable {
+public class ServerRequestHandler implements IServerRequestHandler {
 	
-	private Map<SocketAddress,Socket> connections;
-	private ServerSocket serverSocket;
+	private Socket socket;
 	private volatile boolean listen = true;
 	
-	public ServerRequestHandler() {
-		connections = new HashMap<SocketAddress,Socket>();
-	}
-
-	/* (non-Javadoc)
-	 * @see evs.comm.IServerRequestHandler#receiveRequest()
-	 */
-	public byte[] receiveRequest() throws RemotingException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see evs.comm.IServerRequestHandler#sendResponse(byte[])
-	 */
-	public void sendResponse(byte[] message) throws RemotingException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void bind(SocketAddress localAddress) throws RemotingException {
-		try {
-			serverSocket = new ServerSocket();
-			serverSocket.bind(localAddress);
-		} catch (IOException e) {
-			throw new RemotingException(e);
-		}
-	}
-	
-	public int getPort() {
-		return serverSocket.getLocalPort();
+	public ServerRequestHandler(Socket socket) {
+		this.socket = socket;
 	}
 
 	public void run() {
+		InputStream inputStream;
+		OutputStream outputStream;
+		try {
+			inputStream = socket.getInputStream();
+			outputStream = socket.getOutputStream();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		DataInputStream dataInputStream = new DataInputStream(inputStream);
+		DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+		
 		while (listen) {
-			Socket socket;
+			int length;
 			try {
-				socket = serverSocket.accept();
+				length = dataInputStream.readInt();
 			} catch (IOException e) {
 				e.printStackTrace();
 				return;
 			}
-			SocketAddress address = socket.getRemoteSocketAddress();
-			connections.put(address,socket);
-			
+			byte[] request = new byte[length];
+			try {
+				dataInputStream.readFully(request);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
+			byte[] response = invoke(request);
+			try {
+				dataOutputStream.writeInt(response.length);
+				dataOutputStream.write(response);
+				dataOutputStream.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
 		}
+		
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public Thread start() {
+		Thread t = new Thread(this);
+		t.start();
+		return t;
 	}
 	
 	public void stop() {
 		listen = false;
+	}
+	
+	private byte[] invoke(byte[] request) {
+		System.out.println(new String(request)); // TODO remove
+		byte[] response = request; // TODO replace with invoker
+		return response;
 	}
 
 }
