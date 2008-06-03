@@ -1,10 +1,14 @@
 package evs.core;
 
+import java.net.InetSocketAddress;
+
 import evs.exception.RemotingException;
 import evs.exception.RequestException;
+import evs.interfaces.IAOR;
 import evs.interfaces.IClientRequestHandler;
 import evs.interfaces.IInterceptor;
 import evs.interfaces.IInvocationObject;
+import evs.interfaces.ILocation;
 import evs.interfaces.IRequestor;
 
 public class Requestor implements IRequestor {
@@ -23,15 +27,18 @@ public class Requestor implements IRequestor {
 		
 		switch(object.getRequestType()){
 			case SYNC:
+				IAOR objectReference = object.getObjectReference();
+				ILocation location = objectReference.getLocation();
+				String hostName = location.getHostname();
+				String portString = location.getPort();
+				int port = Integer.parseInt(portString);
+				InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
 				//TEMPORARY leave out request handler for testing purposes
-				//handler.send(object.getObjectReference().getLocation(), marshalledRequest);
+				//handler.send(socketAddress,marshalledRequest);
 				//byte[] marshalledResponse = handler.receiveResponse();
-				if(object.getObjectReference().isLocal())
-				{
+				if (objectReference.isLocal()) {
 					marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
-				}
-				else
-				{
+				} else {
 					// TODO
 					// durch RequestHandler-Aufruf ersetzen
 					marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);

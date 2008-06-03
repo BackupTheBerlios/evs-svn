@@ -363,6 +363,7 @@ public class LifecycleManager implements ILifecycleManager {
 		public PassivatorThread(LifecycleManager manager, long sleepTime){
 			this.manager = manager;
 			this.sleepTime = sleepTime;
+			setName(this.getClass().getName());
 		}
 		
 		public void run(){
@@ -406,6 +407,7 @@ public class LifecycleManager implements ILifecycleManager {
 		public CleanUpThread(LifecycleManager manager, long sleepTime){
 			this.manager = manager;
 			this.sleepTime = sleepTime;
+			setName(this.getClass().getName());
 		}
 		
 		public void run(){

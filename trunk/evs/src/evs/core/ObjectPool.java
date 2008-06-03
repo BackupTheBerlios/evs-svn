@@ -95,6 +95,7 @@ public class ObjectPool implements IObjectPool {
 		public CleanUpThread(ObjectPool pool, long sleepTime){
 			this.pool = pool;
 			this.sleepTime = sleepTime;
+			setName(this.getClass().getName());
 		}
 		
 		public void run(){

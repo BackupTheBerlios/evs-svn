@@ -8,11 +8,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import evs.core.ClientRequestHandler;
+import evs.core.Common;
 import evs.core.ServerConnectionHandler;
 import evs.exception.RemotingException;
+import evs.interfaces.IClientProxy;
 import evs.interfaces.IClientRequestHandler;
 import evs.interfaces.IServerConnectionHandler;
 
@@ -30,6 +40,9 @@ public class Peer implements Runnable {
 	private PrintStream stderr;
 	private boolean running;
 	private boolean verbose;
+	
+	private int proxyNumber;
+	private Map<Integer,IClientProxy> clientProxies;
 	private IClientRequestHandler clientRequestHandler;
 	private IServerConnectionHandler serverConnectionHandler;
 	private Thread listener;
@@ -61,9 +74,12 @@ public class Peer implements Runnable {
 	}
 	
 	public void run() {
+		proxyNumber = 0;
+		clientProxies = new HashMap<Integer,IClientProxy>();
 		serverConnectionHandler = new ServerConnectionHandler();
 		clientRequestHandler = new ClientRequestHandler();
-		listener = new Thread(serverConnectionHandler);
+		listener = new Thread(serverConnectionHandler,"serverConnectionHandler");
+		Common.loadProperties();
 		
 		processArguments();
 		if (exitCode > WARNING)
@@ -151,6 +167,12 @@ public class Peer implements Runnable {
 			if (command.equals("help")) {
 				stdout.println("connect=<remotePort>");
 				stdout.println("  connect the peer to this port");
+				stdout.println("create-proxy=<className>");
+				stdout.println("  create a new client proxy");
+				stdout.println("invoke=<proxy>,<method>,<argument>,...");
+				stdout.println("  invoke method of proxy");
+				stdout.println("list-proxies");
+				stdout.println("  list registered client proxies");
 				stdout.println("listen");
 				stdout.println("  start listening for incoming requests");
 				stdout.println("port=<localPort>");
@@ -161,6 +183,8 @@ public class Peer implements Runnable {
 				stdout.println("  send the message to the remote peer");
 				stdout.println("status");
 				stdout.println("  show the status");
+			} else if (command.equals("list-proxies")) {
+				listProxies();
 			} else if (command.equals("listen")) {
 				listen();
 			} else if (command.equals("quit")) {
@@ -178,6 +202,10 @@ public class Peer implements Runnable {
 			if (key.equals("connect")) {
 				int port = Integer.parseInt(value);
 				remoteAddress = new InetSocketAddress(port);
+			} else if (key.equals("create-proxy")) {
+				createProxy(value);
+			} else if (key.equals("invoke")) {
+				invokeMethod(value);
 			} else if (key.equals("port")) {
 				try {
 					setPort(value);
@@ -190,6 +218,130 @@ public class Peer implements Runnable {
 				stdout.println("The command was invalid.");
 				stdout.println("Enter \"help\" for help.");
 			}
+		}
+	}
+	
+	private synchronized void addProxy(IClientProxy proxy) {
+		clientProxies.put(proxyNumber,proxy);
+		proxyNumber++;
+	}
+	
+	private void createProxy(String className) {
+		Class<?> clazz;
+		try {
+			clazz = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		if (!IClientProxy.class.isAssignableFrom(clazz)) {
+			stderr.println("ERROR Create proxy failed.");
+			stderr.println("The class " + className +
+				" is not a sub type of " + IClientProxy.class.getName() + ".");
+			return;
+		}
+		
+		int modifiers = clazz.getModifiers();
+		if (Modifier.isInterface(modifiers)) {
+			stderr.println("ERROR Create proxy failed.");
+			stderr.println("The class " + className +
+				" is an interface.");
+			return;
+		}
+		if (Modifier.isAbstract(modifiers)) {
+			stderr.println("ERROR Create proxy failed.");
+			stderr.println("The class " + className +
+				" is an abstract class.");
+			return;
+		}
+		
+		Object object;
+		try {
+			object = clazz.newInstance();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+			return;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		IClientProxy proxy = IClientProxy.class.cast(object);
+		addProxy(proxy);
+	}
+	
+	private synchronized IClientProxy getProxy(Integer id) {
+		return clientProxies.get(id);
+	}
+	
+	private void invokeMethod(String command) {
+		String[] values = command.split(",");
+		if (values.length < 2) {
+			stderr.println("ERROR invoke method failed.");
+			stderr.println("An invocation requires at least a proxy id and a method signature.");
+			return;
+		}
+		Integer proxyId = Integer.valueOf(values[0]);
+		IClientProxy proxy = getProxy(proxyId);
+		Class<?> clazz = proxy.getClass();
+		Method[] methods = clazz.getMethods();
+		Method method = null;
+		for (int x = 0; x < methods.length; x++) {
+			String methodName = methods[x].getName();
+			if (methodName.equals(values[1])) {
+				method = methods[x];
+				break;
+			}
+		}
+		
+		if (method == null) {
+			stderr.println("ERROR invoke method failed.");
+			stderr.println("The method \"" + values[1] + "\" was not found.");
+			return;
+		}
+		
+		Class<?>[] parameterTypes = method.getParameterTypes();
+		int argc = parameterTypes.length;
+		if ((argc + 2) != values.length) {
+			stderr.println("ERROR invoke method failed.");
+			stderr.println("The method \"" + values[1] +
+				"\" requires " + parameterTypes.length + " arguments.");
+			return;
+		}
+		
+		// set arguments
+		Object[] arguments = new Object[argc];
+		for (int x = 0; x < argc; x++) {
+			String argumentString = values[x+2];
+			if (argumentString.length() > 0) {
+				Class<?> parameterType = parameterTypes[x];
+				if (parameterType.isAssignableFrom(String.class)) {
+					arguments[x] = argumentString;
+				} else if (parameterType.isAssignableFrom(Integer.class)) {
+					arguments[x] = Integer.valueOf(argumentString);
+				} else {
+					stderr.println("ERROR invoke method failed.");
+					stderr.println("The parameter type " + parameterType.getName() +
+						" is not supported.");
+					return;
+				}
+			} else {
+				arguments[x] = null;
+			}
+		}
+		
+		try {
+			method.invoke(proxy,arguments);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			return;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			return;
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			return;
 		}
 	}
 	
@@ -223,6 +375,16 @@ public class Peer implements Runnable {
 			return null;
 		}
 		return new String(response);
+	}
+	
+	private synchronized void listProxies() {
+		Set<Integer> keys = clientProxies.keySet();
+		for (Integer key: keys) {
+			IClientProxy proxy = clientProxies.get(key);
+			stdout.print(key);
+			stdout.print(" ");
+			stdout.println(proxy.getClass().getName());
+		}
 	}
 	
 	private void listen() {

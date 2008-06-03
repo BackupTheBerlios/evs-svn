@@ -73,7 +73,7 @@ public class ServerRequestHandler implements IServerRequestHandler {
 	}
 	
 	public Thread start() {
-		Thread t = new Thread(this);
+		Thread t = new Thread(this,this.getClass().getName());
 		t.start();
 		return t;
 	}
