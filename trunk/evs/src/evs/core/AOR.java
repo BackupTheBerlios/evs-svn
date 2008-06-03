@@ -53,7 +53,11 @@ public class AOR implements IAOR {
 	 * @see evs.comm.IAOR#isLocal()
 	 */
 	public boolean isLocal() {
-		// TODO Auto-generated method stub
+		// check if the ILocation.hostname and ILocation.port are
+		// the same as where the service from the peer is provided
+		if(this.location.getHostname().equals(Common.getLocation().getHostname()) 
+		   && this.location.getPort().equals(Common.getLocation().getPort()))
+			return true;
 		return false;
 	}
 	

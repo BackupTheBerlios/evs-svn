@@ -17,6 +17,7 @@ public class Requestor implements IRequestor {
 		}
 		
 		byte[] marshalledRequest = Common.getMarshaller().serialize(object);
+		byte[] marshalledResponse;
 		
 		IClientRequestHandler handler = Common.getClientRequesthandler();
 		
@@ -25,7 +26,16 @@ public class Requestor implements IRequestor {
 				//TEMPORARY leave out request handler for testing purposes
 				//handler.send(object.getObjectReference().getLocation(), marshalledRequest);
 				//byte[] marshalledResponse = handler.receiveResponse();
-				byte[] marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
+				if(object.getObjectReference().isLocal())
+				{
+					marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
+				}
+				else
+				{
+					// TODO
+					// durch RequestHandler-Aufruf ersetzen
+					marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
+				}
 				InvocationObject response = (InvocationObject) Common.getMarshaller().deserialize(marshalledResponse);
 				return response.getReturnParam();
 			case FIRE_FORGET:

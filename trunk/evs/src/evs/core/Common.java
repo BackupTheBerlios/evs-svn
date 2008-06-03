@@ -10,6 +10,7 @@ import evs.interfaces.IClientRequestHandler;
 import evs.interfaces.IInterceptorRegistry;
 import evs.interfaces.IInvocationDispatcher;
 import evs.interfaces.ILifecycleManager;
+import evs.interfaces.ILocation;
 import evs.interfaces.IMarshaller;
 import evs.interfaces.IServerConnectionHandler;
 
@@ -68,6 +69,11 @@ public class Common {
 	
 	public static String passivationDir(){
 		return properties.getProperty("PASSIVATION_DIR");
+	}
+	
+	public static ILocation getLocation()
+	{
+		return new WebLocation(properties.getProperty("HOSTNAME"), properties.getProperty("PORT"));
 	}
 	
 	//-------------------------------------------------------------------------------------------------------
