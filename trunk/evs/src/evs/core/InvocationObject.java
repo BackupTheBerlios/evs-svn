@@ -20,7 +20,7 @@ public class InvocationObject implements IInvocationObject {
 	private ArrayList<Object> arguments = new ArrayList<Object>();
 	private Object returnParam = null;
 	// TODO remove InvocationStyle from Inv.Obj.
-	private InvocationStyle requestType = InvocationStyle.SYNC;
+	//private InvocationStyle requestType = InvocationStyle.SYNC;
 	private RemotingException remoteException = new RemotingException();
 	private ArrayList<IInvocationContext> contexts = new ArrayList<IInvocationContext>();
 	
@@ -46,7 +46,7 @@ public class InvocationObject implements IInvocationObject {
 		this.operationName = operationName;
 		this.arguments = arguments;
 		this.returnParam = returnParam;
-		this.requestType = requestType;
+		//this.requestType = requestType;
 		this.remoteException = remoteException;
 	}
 
@@ -86,13 +86,13 @@ public class InvocationObject implements IInvocationObject {
 		this.returnParam = returnParam;
 	}
 
-	public InvocationStyle getRequestType() {
-		return requestType;
-	}
-
-	public void setRequestType(InvocationStyle requestType) {
-		this.requestType = requestType;
-	}
+//	public InvocationStyle getRequestType() {
+//		return requestType;
+//	}
+//
+//	public void setRequestType(InvocationStyle requestType) {
+//		this.requestType = requestType;
+//	}
 
 	public RemotingException getRemoteException() {
 		return remoteException;
@@ -122,7 +122,7 @@ public class InvocationObject implements IInvocationObject {
 		for (int i=0; i<arguments.size(); i++)  
 			out.writeObject(arguments.get(i)); 
 		out.writeObject(returnParam);
-		out.writeUTF(requestType.name());
+//		out.writeUTF(requestType.name());
 		out.writeObject(remoteException);
 		out.writeInt(contexts.size());
 		for(int i=0; i<contexts.size(); i++)
@@ -137,7 +137,7 @@ public class InvocationObject implements IInvocationObject {
 		for(int i=0; i<len; i++)
 			this.arguments.add(in.readObject());
 		this.returnParam = in.readObject();
-		this.requestType = java.lang.Enum.valueOf(InvocationStyle.class, in.readUTF());
+//		this.requestType = java.lang.Enum.valueOf(InvocationStyle.class, in.readUTF());
 		this.remoteException =  (RemotingException) (in.readObject());
 		len = in.readInt();
 		for(int i=0; i<len; i++)

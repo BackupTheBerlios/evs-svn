@@ -4,7 +4,6 @@ import java.io.Externalizable;
 import java.util.ArrayList;
 import java.util.List;
 
-import evs.core.InvocationStyle;
 import evs.exception.RemotingException;
 
 public interface IInvocationObject extends Externalizable {
@@ -23,8 +22,8 @@ public interface IInvocationObject extends Externalizable {
 	Object getReturnParam();
 	void setReturnParam(Object returnParam);
 
-	InvocationStyle getRequestType();
-	void setRequestType(InvocationStyle requestType);
+//	InvocationStyle getRequestType();
+//	void setRequestType(InvocationStyle requestType);
 	
 	RemotingException getRemoteException();
 	void setRemoteException(RemotingException remoteException);
