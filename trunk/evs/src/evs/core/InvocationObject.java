@@ -19,6 +19,7 @@ public class InvocationObject implements IInvocationObject {
 	private String operationName = null;
 	private ArrayList<Object> arguments = new ArrayList<Object>();
 	private Object returnParam = null;
+	// TODO remove InvocationStyle from Inv.Obj.
 	private InvocationStyle requestType = InvocationStyle.SYNC;
 	private RemotingException remoteException = new RemotingException();
 	private ArrayList<IInvocationContext> contexts = new ArrayList<IInvocationContext>();

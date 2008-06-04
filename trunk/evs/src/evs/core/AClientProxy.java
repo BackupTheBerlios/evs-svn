@@ -15,11 +15,24 @@ public abstract class AClientProxy implements IClientProxy{
 
 	protected IRequestor requestor;
 	protected IAOR aor;
+	protected InvocationStyle requestType;
+	protected ICallback callback;
 	
 	public AClientProxy(){
 		this.requestor = new Requestor();
+		requestType = InvocationStyle.FIRE_FORGET;
+	}
+	
+	public AClientProxy(ICallback callback){
+		this.requestor = new Requestor();
+		requestType = InvocationStyle.RESULT_CALLBACK;
 	}
 
+	public AClientProxy(InvocationStyle requestType, ICallback callback){
+		this.requestor = new Requestor();
+		this.requestType = requestType;
+	}
+	
 	public IAOR getAOR() {
 		return aor;
 	}
@@ -28,7 +41,7 @@ public abstract class AClientProxy implements IClientProxy{
 		this.aor = aor;
 	}
 	
-	public void newInstance(ICallback callback, IACT act) throws NotSupportedException{
+	public void newInstance(IACT act) throws NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "newInstance", arguments, "String");
@@ -63,5 +76,21 @@ public abstract class AClientProxy implements IClientProxy{
 			 System.out.println("[x] ERROR: " + ex.getClass().getName() + " :" + ex.getMessage());
 			 ex.printStackTrace();
 		}
+	}
+
+	public InvocationStyle getRequestType() {
+		return requestType;
+	}
+
+	public void setRequestType(InvocationStyle requestType) {
+		this.requestType = requestType;
+	}
+
+	public ICallback getCallback() {
+		return callback;
+	}
+
+	public void setCallback(ICallback callback) {
+		this.callback = callback;
 	}
 }
