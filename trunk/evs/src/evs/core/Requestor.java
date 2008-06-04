@@ -30,39 +30,36 @@ public class Requestor implements IRequestor {
 		byte[] marshalledResponse;
 		
 		IClientRequestHandler handler = Common.getClientRequesthandler();
+		IAOR objectReference = object.getObjectReference();
+		/* TODO local invokes
+		if (objectReference.isLocal()) {
+			marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
+		} else {
+		*/
+		ILocation location = objectReference.getLocation();
+		String hostName = location.getHostname();
+		String portString = location.getPort();
+		int port = Integer.parseInt(portString);
+		InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
+		
 		
 		switch(object.getRequestType()){
 			case SYNC:
-				IAOR objectReference = object.getObjectReference();
-				if (objectReference.isLocal()) {
-					marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
-				} else {
-					ILocation location = objectReference.getLocation();
-					String hostName = location.getHostname();
-					String portString = location.getPort();
-					int port = Integer.parseInt(portString);
-					InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
-					marshalledResponse = handler.send(socketAddress,marshalledRequest);
-				}
+
+				marshalledResponse = handler.send(socketAddress,marshalledRequest);
+				
 				if (marshalledResponse.length == 0) {
 					throw new RemotingException("The remote invocation failed.");
 				}
 				IInvocationObject response = (IInvocationObject) Common.getMarshaller().deserialize(marshalledResponse);
 				return response.getReturnParam();
-			case FIRE_FORGET:
-				if(!isVoid){
-					throw new RequestException("\"Fire and Forget\" not available for non-void methods!");
-				}
-				//handler.send(address, marshalledRequest);
-				return null;
 			case POLL_OBJECT:
 				//TODO
 			case RESULT_CALLBACK:
-				//TODO
-				// save callback received from client with according ACT in map
+				//marshalledResponse = send_callback(socketAddress, marshalledRequest, this);
+				// TODO save callback received from client with according ACT in map
 			default:
-				throw new RequestException("Unknown Requesttype!");
-				
+				//marshalledResponse = send_poll(socketAddress, marshalledRequest);
 		}
 	}
 	
