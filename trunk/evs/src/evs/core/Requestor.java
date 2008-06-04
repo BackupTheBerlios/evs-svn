@@ -6,6 +6,7 @@ import java.util.Map;
 
 import evs.exception.RemotingException;
 import evs.exception.RequestException;
+import evs.interfaces.IACT;
 import evs.interfaces.IAOR;
 import evs.interfaces.ICallback;
 import evs.interfaces.IClientRequestHandler;
@@ -16,9 +17,9 @@ import evs.interfaces.IRequestor;
 
 public class Requestor implements IRequestor {
 	
-	private Map<ACT, ICallback> clientCallbacks = new HashMap<ACT, ICallback>();
+	private Map<IACT, ICallback> clientCallbacks = new HashMap<IACT, ICallback>();
 	
-	public Object invoke(IInvocationObject object, boolean isVoid) throws RemotingException {
+	public Object invoke(IInvocationObject object, boolean isVoid, ICallback callback, IACT act) throws RemotingException {
 		
 		//handle interceptors
 		for(IInterceptor interceptor: Common.getClientInterceptors().getInterceptors()){
@@ -64,8 +65,42 @@ public class Requestor implements IRequestor {
 				
 		}
 	}
+	
+	// Fire and Forget 
+	public Object invoke(IInvocationObject object, boolean isVoid) throws RemotingException {
+		
+		//handle interceptors
+		for(IInterceptor interceptor: Common.getClientInterceptors().getInterceptors()){
+			interceptor.beforeInvocation(object);
+		}
+		
+		byte[] marshalledRequest = Common.getMarshaller().serialize(object);
+		byte[] marshalledResponse;
+		
+		IClientRequestHandler handler = Common.getClientRequesthandler();
+		
+		if(!isVoid){
+			throw new RequestException("\"Fire and Forget\" not available for non-void methods!");
+		}
+		IAOR objectReference = object.getObjectReference();
+		if (objectReference.isLocal()) {
+			marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
+		} else {
+			ILocation location = objectReference.getLocation();
+			String hostName = location.getHostname();
+			String portString = location.getPort();
+			int port = Integer.parseInt(portString);
+			InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
+			marshalledResponse = handler.send(socketAddress,marshalledRequest);
+		}
+		if (marshalledResponse.length == 0) {
+			throw new RemotingException("The remote invocation failed.");
+		}
+		IInvocationObject response = (IInvocationObject) Common.getMarshaller().deserialize(marshalledResponse);
+		return response.getReturnParam();
+	}
 
-	public void returnResult(ACT act, byte[] result)
+	public void returnResult(IACT act, byte[] result)
     {
 		ICallback clientCallback = clientCallbacks.get(act);
 		clientCallback.resultReturned(act, result);

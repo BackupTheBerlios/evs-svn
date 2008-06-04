@@ -10,6 +10,6 @@ public interface ICallback {
 //	Object getResult() throws RemotingException;
 //	boolean finished();
 
-	void resultReturned(ACT act, Object result);
+	void resultReturned(IACT act, Object result);
 	
 }

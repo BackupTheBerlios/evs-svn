@@ -62,6 +62,4 @@ public abstract class AClientProxy implements IClientProxy{
 			 ex.printStackTrace();
 		}
 	}
-	
-	
 }

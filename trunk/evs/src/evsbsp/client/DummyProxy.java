@@ -13,6 +13,8 @@ import evs.exception.IllegalMethodException;
 import evs.exception.IllegalObjectException;
 import evs.exception.NotSupportedException;
 import evs.exception.RemotingException;
+import evs.interfaces.IACT;
+import evs.interfaces.ICallback;
 import evs.interfaces.IInvocationObject;
 import evsbsp.IDummyOperations;
 import evsbsp.exception.DummyException;
@@ -45,12 +47,43 @@ public class DummyProxy extends AClientProxy implements IDummyOperations  {
 			 ex.printStackTrace();
 		}
 	}
-
+	
+	public void testCall(Integer a, ICallback callback, IACT act) throws DummyException, NotSupportedException{
+		ArrayList<Object> arguments = new ArrayList<Object>();
+		arguments.add(a);
+		try{
+			IInvocationObject object = new InvocationObject(getAOR(), "testCall", arguments, "void");
+			requestor.invoke(object, true, callback, act);
+		} catch(RemotingException ex){
+			 if(ex instanceof DummyException) throw (DummyException) ex;
+			 if(ex instanceof IllegalObjectException) throw new NotSupportedException(ex.getMessage());
+			 if(ex instanceof IllegalMethodException) throw new NotSupportedException(ex.getMessage());
+			 if(ex instanceof NotSupportedException) throw (NotSupportedException) ex;
+			 System.out.println("[x] ERROR: " + ex.getClass().getName() + " :" + ex.getMessage());
+			 ex.printStackTrace();
+		}
+	}
+	
 	public Integer getCounter() throws DummyException, NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "getCounter", arguments, "Integer");
 			return (Integer) requestor.invoke(object, false);
+		} catch(RemotingException ex){
+			 if(ex instanceof DummyException) throw (DummyException) ex;
+			 if(ex instanceof IllegalObjectException) throw new NotSupportedException(ex.getMessage());
+			 if(ex instanceof IllegalMethodException) throw new NotSupportedException(ex.getMessage());
+			 if(ex instanceof NotSupportedException) throw (NotSupportedException) ex;
+			 System.out.println("[x] ERROR: " + ex.getClass().getName() + " :" + ex.getMessage());
+			 ex.printStackTrace();
+		}
+		return null;
+	}
+	public Integer getCounter(ICallback callback, IACT act) throws DummyException, NotSupportedException{
+		ArrayList<Object> arguments = new ArrayList<Object>();
+		try{
+			IInvocationObject object = new InvocationObject(getAOR(), "getCounter", arguments, "Integer");
+			return (Integer) requestor.invoke(object, false, callback, act);
 		} catch(RemotingException ex){
 			 if(ex instanceof DummyException) throw (DummyException) ex;
 			 if(ex instanceof IllegalObjectException) throw new NotSupportedException(ex.getMessage());
