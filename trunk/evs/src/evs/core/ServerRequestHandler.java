@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import evs.exception.RemotingException;
+import evs.interfaces.IInvocationDispatcher;
 import evs.interfaces.IServerRequestHandler;
 
 /**
@@ -19,6 +21,7 @@ import evs.interfaces.IServerRequestHandler;
 public class ServerRequestHandler implements IServerRequestHandler {
 	
 	private Socket socket;
+	private IInvocationDispatcher invocationDispatcher;
 	private volatile boolean listen = true;
 	
 	public ServerRequestHandler(Socket socket) {
@@ -72,6 +75,10 @@ public class ServerRequestHandler implements IServerRequestHandler {
 		}
 	}
 	
+	public void setInvocationDispatcher(IInvocationDispatcher invocationDispatcher) {
+		this.invocationDispatcher = invocationDispatcher;
+	}
+
 	public Thread start() {
 		Thread t = new Thread(this,this.getClass().getName());
 		t.start();
@@ -83,8 +90,13 @@ public class ServerRequestHandler implements IServerRequestHandler {
 	}
 	
 	private byte[] invoke(byte[] request) {
-		System.out.println(new String(request)); // TODO remove
-		byte[] response = request; // TODO replace with invoker
+		byte[] response;
+		try {
+			response = invocationDispatcher.invoke(request);
+		} catch (RemotingException e) {
+			e.printStackTrace();
+			response = new byte[0];
+		}
 		return response;
 	}
 

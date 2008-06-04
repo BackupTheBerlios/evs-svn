@@ -9,6 +9,7 @@ package evs.interfaces;
  */
 public interface IServerRequestHandler extends Runnable {
 	
+	void setInvocationDispatcher(IInvocationDispatcher invocationDispatcher);
 	Thread start();
 	void stop();
 

@@ -15,6 +15,7 @@ public interface IServerConnectionHandler extends Runnable {
 	
 	void bind(SocketAddress localAddress) throws RemotingException;
 	int getPort();
+	void setInvocationDispatcher(IInvocationDispatcher invocationDispatcher);
 	Thread start();
 	void stop();
 

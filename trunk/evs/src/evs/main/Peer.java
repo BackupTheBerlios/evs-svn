@@ -12,18 +12,24 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import evs.core.ClientRequestHandler;
 import evs.core.Common;
+import evs.core.LifecycleManager;
+import evs.core.ObjectReference;
 import evs.core.ServerConnectionHandler;
+import evs.exception.IllegalObjectException;
+import evs.exception.NotSupportedException;
 import evs.exception.RemotingException;
 import evs.interfaces.IClientProxy;
 import evs.interfaces.IClientRequestHandler;
+import evs.interfaces.IInvocationDispatcher;
+import evs.interfaces.IInvoker;
+import evs.interfaces.ILifecycleManager;
+import evs.interfaces.IObjectReference;
 import evs.interfaces.IServerConnectionHandler;
 
 /**
@@ -47,6 +53,8 @@ public class Peer implements Runnable {
 	private IServerConnectionHandler serverConnectionHandler;
 	private Thread listener;
 	private InetSocketAddress remoteAddress;
+	private ILifecycleManager lifeCycleManager;
+	private IInvocationDispatcher invocationDispatcher;
 	
 	private static final int WARNING = 1;
 	private static final int ERROR   = 2;
@@ -75,11 +83,14 @@ public class Peer implements Runnable {
 	
 	public void run() {
 		proxyNumber = 0;
-		clientProxies = new HashMap<Integer,IClientProxy>();
-		serverConnectionHandler = new ServerConnectionHandler();
-		clientRequestHandler = new ClientRequestHandler();
-		listener = new Thread(serverConnectionHandler,"serverConnectionHandler");
 		Common.loadProperties();
+		clientProxies = new HashMap<Integer,IClientProxy>();
+		clientRequestHandler = Common.getClientRequesthandler();
+		lifeCycleManager = Common.getObjectManager();
+		invocationDispatcher = Common.getInvocationDispatcher();
+		serverConnectionHandler = new ServerConnectionHandler();
+		serverConnectionHandler.setInvocationDispatcher(invocationDispatcher);
+		listener = new Thread(serverConnectionHandler,"serverConnectionHandler");
 		
 		processArguments();
 		if (exitCode > WARNING)
@@ -167,6 +178,8 @@ public class Peer implements Runnable {
 			if (command.equals("help")) {
 				stdout.println("connect=<remotePort>");
 				stdout.println("  connect the peer to this port");
+				stdout.println("create-object=<className>");
+				stdout.println("  create a new server object");
 				stdout.println("create-proxy=<className>");
 				stdout.println("  create a new client proxy");
 				stdout.println("invoke=<proxy>,<method>,<argument>,...");
@@ -179,6 +192,8 @@ public class Peer implements Runnable {
 				stdout.println("  bind the peer to this port");
 				stdout.println("quit");
 				stdout.println("  terminate the peer");
+				stdout.println("register-object=<className>");
+				stdout.println("  register a new server object");
 				stdout.println("send=<message>");
 				stdout.println("  send the message to the remote peer");
 				stdout.println("status");
@@ -202,6 +217,8 @@ public class Peer implements Runnable {
 			if (key.equals("connect")) {
 				int port = Integer.parseInt(value);
 				remoteAddress = new InetSocketAddress(port);
+			} else if (key.equals("create-object")) {
+				createObject(value);
 			} else if (key.equals("create-proxy")) {
 				createProxy(value);
 			} else if (key.equals("invoke")) {
@@ -212,6 +229,8 @@ public class Peer implements Runnable {
 				} catch (RemotingException e) {
 					stdout.println(e.getMessage());
 				}
+			} else if (key.equals("register-object")) {
+				registerObject(value);
 			} else if (key.equals("send")) {
 				stdout.println(sendTextMessage(value));
 			} else {
@@ -224,6 +243,19 @@ public class Peer implements Runnable {
 	private synchronized void addProxy(IClientProxy proxy) {
 		clientProxies.put(proxyNumber,proxy);
 		proxyNumber++;
+	}
+	
+	private void createObject(String className) {
+		IObjectReference ref = new ObjectReference(className,className + "Invoker");
+		try {
+			lifeCycleManager.newInstance(ref);
+		} catch (NotSupportedException e) {
+			e.printStackTrace();
+			return;
+		} catch (IllegalObjectException e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 	
 	private void createProxy(String className) {
@@ -268,6 +300,7 @@ public class Peer implements Runnable {
 		}
 		
 		IClientProxy proxy = IClientProxy.class.cast(object);
+		//proxy.newInstance();
 		addProxy(proxy);
 	}
 	
@@ -348,6 +381,59 @@ public class Peer implements Runnable {
 	private void raiseExitCode(int i) {
 		if (i > exitCode) {
 			exitCode = i;
+		}
+	}
+	
+	private void registerObject(String className) {
+		IObjectReference ref = new ObjectReference(className,className + "Invoker");
+		Class<?> clazz;
+		try {
+			clazz = Class.forName(ref.getInvokerId());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		if (!IInvoker.class.isAssignableFrom(clazz)) {
+			stderr.println("ERROR Register object failed.");
+			stderr.println("The class " + className +
+				" is not a sub type of " + IInvoker.class.getName() + ".");
+			return;
+		}
+		
+		int modifiers = clazz.getModifiers();
+		if (Modifier.isInterface(modifiers)) {
+			stderr.println("ERROR Register object failed.");
+			stderr.println("The class " + className +
+				" is an interface.");
+			return;
+		}
+		if (Modifier.isAbstract(modifiers)) {
+			stderr.println("ERROR Register object failed.");
+			stderr.println("The class " + className +
+				" is an abstract class.");
+			return;
+		}
+		
+		Object object;
+		try {
+			object = clazz.newInstance();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+			return;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		IInvoker invoker = IInvoker.class.cast(object);
+		invocationDispatcher.registerInvoker(ref.getInvokerId(),invoker);
+
+		try {
+			lifeCycleManager.register(ref);
+		} catch (IllegalObjectException e) {
+			e.printStackTrace();
+			return;
 		}
 	}
 	

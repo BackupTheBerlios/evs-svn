@@ -28,22 +28,20 @@ public class Requestor implements IRequestor {
 		switch(object.getRequestType()){
 			case SYNC:
 				IAOR objectReference = object.getObjectReference();
-				ILocation location = objectReference.getLocation();
-				String hostName = location.getHostname();
-				String portString = location.getPort();
-				int port = Integer.parseInt(portString);
-				InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
-				//TEMPORARY leave out request handler for testing purposes
-				//handler.send(socketAddress,marshalledRequest);
-				//byte[] marshalledResponse = handler.receiveResponse();
 				if (objectReference.isLocal()) {
 					marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
 				} else {
-					// TODO
-					// durch RequestHandler-Aufruf ersetzen
-					marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
+					ILocation location = objectReference.getLocation();
+					String hostName = location.getHostname();
+					String portString = location.getPort();
+					int port = Integer.parseInt(portString);
+					InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
+					marshalledResponse = handler.send(socketAddress,marshalledRequest);
 				}
-				InvocationObject response = (InvocationObject) Common.getMarshaller().deserialize(marshalledResponse);
+				if (marshalledResponse.length == 0) {
+					throw new RemotingException("The remote invocation failed.");
+				}
+				IInvocationObject response = (IInvocationObject) Common.getMarshaller().deserialize(marshalledResponse);
 				return response.getReturnParam();
 			case FIRE_FORGET:
 				if(!isVoid){

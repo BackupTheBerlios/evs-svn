@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import evs.exception.RemotingException;
+import evs.interfaces.IInvocationDispatcher;
 import evs.interfaces.IServerConnectionHandler;
 import evs.interfaces.IServerRequestHandler;
 
@@ -22,6 +23,7 @@ public class ServerConnectionHandler implements IServerConnectionHandler {
 	
 	private Map<SocketAddress,Socket> connections;
 	private ServerSocket serverSocket;
+	private IInvocationDispatcher invocationDispatcher;
 	private volatile boolean listen = true;
 	
 	public ServerConnectionHandler() {
@@ -53,6 +55,7 @@ public class ServerConnectionHandler implements IServerConnectionHandler {
 			SocketAddress address = socket.getRemoteSocketAddress();
 			connections.put(address,socket);
 			IServerRequestHandler serverRequestHandler = new ServerRequestHandler(socket);
+			serverRequestHandler.setInvocationDispatcher(invocationDispatcher);
 			serverRequestHandler.start();
 		}
 		
@@ -63,6 +66,10 @@ public class ServerConnectionHandler implements IServerConnectionHandler {
 		}
 	}
 	
+	public void setInvocationDispatcher(IInvocationDispatcher invocationDispatcher) {
+		this.invocationDispatcher = invocationDispatcher;
+	}
+
 	public Thread start() {
 		Thread t = new Thread(this,this.getClass().getName());
 		t.start();
