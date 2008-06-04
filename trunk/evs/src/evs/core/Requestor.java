@@ -1,10 +1,13 @@
 package evs.core;
 
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import evs.exception.RemotingException;
 import evs.exception.RequestException;
 import evs.interfaces.IAOR;
+import evs.interfaces.ICallback;
 import evs.interfaces.IClientRequestHandler;
 import evs.interfaces.IInterceptor;
 import evs.interfaces.IInvocationObject;
@@ -12,6 +15,8 @@ import evs.interfaces.ILocation;
 import evs.interfaces.IRequestor;
 
 public class Requestor implements IRequestor {
+	
+	private Map<ACT, ICallback> clientCallbacks = new HashMap<ACT, ICallback>();
 	
 	public Object invoke(IInvocationObject object, boolean isVoid) throws RemotingException {
 		
@@ -53,10 +58,17 @@ public class Requestor implements IRequestor {
 				//TODO
 			case RESULT_CALLBACK:
 				//TODO
+				// save callback received from client with according ACT in map
 			default:
 				throw new RequestException("Unknown Requesttype!");
 				
 		}
 	}
+
+	public void returnResult(ACT act, byte[] result)
+    {
+		ICallback clientCallback = clientCallbacks.get(act);
+		clientCallback.resultReturned(act, result);
+    }
 	
 }

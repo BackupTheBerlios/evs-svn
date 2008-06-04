@@ -3,6 +3,7 @@
  */
 package evs.interfaces;
 
+import evs.core.ACT;
 import evs.exception.RemotingException;
 
 /**
@@ -28,6 +29,10 @@ public interface IRequestor {
 	 */
 	//public Object invoke(IAOR object, Object method, Object... arguments);
 
-
-
+	/**
+	 * @param act asynchronous communication token
+	 * @param result result from call of remote object
+	 */
+	public void returnResult(ACT act, byte[] result);
+	
 }
