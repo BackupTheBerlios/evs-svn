@@ -25,7 +25,7 @@ public class Client implements ICallback{
 
 	private void run() {
 		// TODO Auto-generated method stub
-		DummyProxy dummy = new DummyProxy();
+		DummyProxy dummy = new DummyProxy(this);
 		
 		// TODO TEMPORARY call lifecycle manager here:
 		try {
@@ -41,32 +41,32 @@ public class Client implements ICallback{
 			
 			IACT act = new ACT();
 			
-			dummy.newInstance(this, act);
-			Integer value = dummy.getCounter(this, act);
+			dummy.newInstance(act);
+			Integer value = dummy.getCounter(act);
 			System.out.println("[*] Initial value=" + value);
 			dummy.testCall(new Integer(1337));
-			value = dummy.getCounter(this, act);
+			value = dummy.getCounter(act);
 			System.out.println("[*] Value after incrementing=" + value);
 			dummy.testCall(new Integer(1));
-			value = dummy.getCounter(this, act);
+			value = dummy.getCounter(act);
 			System.out.println("[*] Value after incrementing=" + value);
 			dummy.testCall(new Integer(1));
-			value = dummy.getCounter(this, act);
+			value = dummy.getCounter(act);
 			System.out.println("[*] Value after incrementing=" + value);
 			Thread.sleep(1000);
-			value = dummy.getCounter(this, act);
+			value = dummy.getCounter(act);
 			System.out.println("[*] Value after incrementing=" + value);
 			dummy.keepAlive();
 			Thread.sleep(5);
-			value = dummy.getCounter(this, act);
+			value = dummy.getCounter(act);
 			System.out.println("[*] Value after incrementing=" + value);
 			Thread.sleep(100);
-			value = dummy.getCounter(this, act);
+			value = dummy.getCounter(act);
 			System.out.println("[*] Value after incrementing=" + value);
 			//dummy.destroy();
 			Thread.sleep(10000);
 			
-			value = dummy.getCounter(this, act);
+			value = dummy.getCounter(act);
 			System.out.println("[*] Value after incrementing=" + value);
 		} catch (Exception ex){
 			System.out.println("[x] Exception caught: " + ex.getMessage());
