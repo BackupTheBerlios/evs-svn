@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import evs.exception.NotSupportedException;
 import evs.exception.RemotingException;
+import evs.interfaces.IACT;
 import evs.interfaces.IAOR;
+import evs.interfaces.ICallback;
 import evs.interfaces.IClientProxy;
 import evs.interfaces.IInvocationObject;
 import evs.interfaces.IRequestor;
@@ -26,11 +28,11 @@ public abstract class AClientProxy implements IClientProxy{
 		this.aor = aor;
 	}
 	
-	public void newInstance() throws NotSupportedException{
+	public void newInstance(ICallback callback, IACT act) throws NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "newInstance", arguments, "String");
-			String objectId = (String) requestor.invoke(object, false);
+			String objectId = (String) requestor.invoke(object, false, callback, act);
 			this.aor.getReference().setInstanceId(objectId);
 		} catch(RemotingException ex){
 			 if(ex instanceof NotSupportedException) throw (NotSupportedException) ex;
