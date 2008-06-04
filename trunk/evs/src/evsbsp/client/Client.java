@@ -18,7 +18,7 @@ public class Client {
 		// TODO Auto-generated method stub
 		DummyProxy dummy = new DummyProxy();
 		
-		//TEMPORARY call lifecycle manager here:
+		// TODO TEMPORARY call lifecycle manager here:
 		try {
 			Common.loadProperties();
 			IObjectReference ref = new ObjectReference(Dummy.class.getName(), DummyInvoker.class.getName());
