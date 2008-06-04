@@ -19,7 +19,7 @@ public class InvocationDispatcher implements IInvocationDispatcher {
 		invokers.remove(invokerId);
 	}
 	
-	public byte[] invoke(byte[] message) throws evs.exception.RemotingException{
+	public synchronized byte[] invoke(byte[] message) throws evs.exception.RemotingException{
 		IInvocationObject object = Common.getMarshaller().deserialize(message);
 
 		IInvoker invoker = invokers.get(object.getObjectReference().getReference().getInvokerId());
