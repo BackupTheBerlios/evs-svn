@@ -67,7 +67,7 @@ public class Requestor implements IRequestor {
 	}
 	
 	// Fire and Forget 
-	public Object invoke(IInvocationObject object, boolean isVoid) throws RemotingException {
+	public void invoke(IInvocationObject object, boolean isVoid) throws RemotingException {
 		
 		//handle interceptors
 		for(IInterceptor interceptor: Common.getClientInterceptors().getInterceptors()){
@@ -75,7 +75,6 @@ public class Requestor implements IRequestor {
 		}
 		
 		byte[] marshalledRequest = Common.getMarshaller().serialize(object);
-		byte[] marshalledResponse;
 		
 		IClientRequestHandler handler = Common.getClientRequesthandler();
 		
@@ -84,20 +83,16 @@ public class Requestor implements IRequestor {
 		}
 		IAOR objectReference = object.getObjectReference();
 		if (objectReference.isLocal()) {
-			marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
+			// TODO call Request Handler
+			Common.getInvocationDispatcher().invoke(marshalledRequest);
 		} else {
 			ILocation location = objectReference.getLocation();
 			String hostName = location.getHostname();
 			String portString = location.getPort();
 			int port = Integer.parseInt(portString);
 			InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
-			marshalledResponse = handler.send(socketAddress,marshalledRequest);
+			handler.send(socketAddress,marshalledRequest);
 		}
-		if (marshalledResponse.length == 0) {
-			throw new RemotingException("The remote invocation failed.");
-		}
-		IInvocationObject response = (IInvocationObject) Common.getMarshaller().deserialize(marshalledResponse);
-		return response.getReturnParam();
 	}
 
 	public void returnResult(IACT act, byte[] result)

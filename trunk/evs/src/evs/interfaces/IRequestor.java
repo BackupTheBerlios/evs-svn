@@ -17,7 +17,7 @@ public interface IRequestor {
 	 * @param isVoid specifies whether the client expects a response
 	 * @return the response. This is always null for asynchronous requests.
 	 */
-	public Object invoke(IInvocationObject object, boolean isVoid) throws RemotingException;
+	public void invoke(IInvocationObject object, boolean isVoid) throws RemotingException;
 	
 	
 	/**

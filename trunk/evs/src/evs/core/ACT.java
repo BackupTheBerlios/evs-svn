@@ -8,6 +8,10 @@ public class ACT implements IACT{
 
 	private Timestamp timestamp;
 
+	public ACT() {
+		this.timestamp = new Timestamp(System.currentTimeMillis());
+	}
+	
 	public Timestamp getTimestamp() {
 		return timestamp;
 	}
