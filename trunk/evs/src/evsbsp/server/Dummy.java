@@ -18,10 +18,11 @@ public class Dummy extends ARemoteObject implements IDummyOperations  {
 		this.counter = 0;
 	}
 
-	public void testCall(Integer a, IACT act) throws evsbsp.exception.DummyException{
+	public Object testCall(Integer a, IACT act) throws evsbsp.exception.DummyException{
 		/* Auto-Generated Method Stub */ 
 		System.out.println("----------------- testCall called with parameter=" + a + ", countervalue=" + this.counter);
 		this.counter += a;
+		return null;
 	}
 
 	public Integer getCounter(IACT act) throws evsbsp.exception.DummyException{

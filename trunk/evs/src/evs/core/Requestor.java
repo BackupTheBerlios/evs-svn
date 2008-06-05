@@ -4,12 +4,11 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import evs.exception.MarshallingException;
 import evs.exception.RemotingException;
-import evs.exception.RequestException;
 import evs.interfaces.IACT;
 import evs.interfaces.IAOR;
 import evs.interfaces.ICallback;
-import evs.interfaces.IClientRequestHandler;
 import evs.interfaces.IInterceptor;
 import evs.interfaces.IInvocationObject;
 import evs.interfaces.ILocation;
@@ -17,13 +16,16 @@ import evs.interfaces.IMarshaller;
 import evs.interfaces.IPollObject;
 import evs.interfaces.IPollObjectRequestor;
 import evs.interfaces.IRequestor;
+import evsbsp.exception.DummyException;
 
 public class Requestor implements IRequestor {
 	
 	private Map<IACT, ICallback> clientCallbacks = new HashMap<IACT, ICallback>();
 	
 	// Callback
-	public Object invoke(IInvocationObject object, boolean isVoid, ICallback callback, IACT act) throws RemotingException {
+	public Object invoke(IInvocationObject object, boolean isVoid, ICallback callback, IACT act, InvocationStyle style) throws RemotingException {
+		
+		// TODO LOCAL INVOCATIONS
 		
 		//handle interceptors
 		for(IInterceptor interceptor: Common.getClientInterceptors().getInterceptors()){
@@ -31,62 +33,52 @@ public class Requestor implements IRequestor {
 		}
 		
 		byte[] marshalledRequest = Common.getMarshaller().serialize(object);
-		byte[] marshalledResponse;
 		
-		IClientRequestHandler handler = Common.getClientRequesthandler();
 		IAOR objectReference = object.getObjectReference();
+		
 		/* TODO local invokes
 		if (objectReference.isLocal()) {
 			marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
 		} else {
 		*/
 		InetSocketAddress socketAddress = getInetSocketAddress(objectReference);
-		marshalledResponse = handler.send(socketAddress,marshalledRequest);
-		if (marshalledResponse.length == 0) {
-			throw new RemotingException("The remote invocation failed.");
-		}
-		IInvocationObject response = (IInvocationObject) Common.getMarshaller().deserialize(marshalledResponse);
-		return response.getReturnParam();
-	}
-	
-	// Fire and Forget 
-	public void invoke(IInvocationObject object, boolean isVoid) throws RemotingException {
-		
-		//handle interceptors
-		for(IInterceptor interceptor: Common.getClientInterceptors().getInterceptors()){
-			interceptor.beforeInvocation(object);
-		}
-		
-		byte[] marshalledRequest = Common.getMarshaller().serialize(object);
-		
-		IClientRequestHandler handler = Common.getClientRequesthandler();
-		
-		if(!isVoid){
-			throw new RequestException("\"Fire and Forget\" not available for non-void methods!");
-		}
-		IAOR objectReference = object.getObjectReference();
-		if (objectReference.isLocal()) {
-			// TODO call Request Handler
-			Common.getInvocationDispatcher().invoke(marshalledRequest);
-		} else {
-			InetSocketAddress socketAddress = getInetSocketAddress(objectReference);
-			handler.send(socketAddress,marshalledRequest);
-		}
-	}
-	
-	// Poll Object
-	public IPollObject invokePoll(IInvocationObject invocationObject) throws RemotingException {
-		IPollObject pollObject = new PollObject();
-		IMarshaller marshaller = Common.getMarshaller();
-		IPollObjectRequestor pollObjectRequestor =
-			new PollObjectRequestor(invocationObject,marshaller,pollObject);
-		pollObjectRequestor.start();
-		return pollObject;
-	}
 
-	public void returnResult(IACT act, byte[] result) {
+		switch(style)
+		{
+			case POLL_OBJECT:
+				if(act != null)
+					throw new DummyException("No ACT is needed with InvocationStyle POLL_OBJECT");
+				
+				IPollObject pollObject = new PollObject();
+				IMarshaller marshaller = Common.getMarshaller();
+				IPollObjectRequestor pollObjectRequestor = new PollObjectRequestor(object, marshaller, pollObject);
+				pollObjectRequestor.start();
+				return pollObject;
+			case FIRE_FORGET:
+				Common.getClientRequesthandler().send_fireforget(socketAddress, marshalledRequest);
+				return null;
+			case RESULT_CALLBACK:
+			default:
+				if(act == null)
+					throw new DummyException("An ACT is needed for RESULT_CALLBACK InvocationStyle.");
+
+				clientCallbacks.put(act, callback);				
+				Common.getClientRequesthandler().send_callback(socketAddress, marshalledRequest, this);
+				return null;
+		}
+	}
+	
+	public synchronized void returnResult(IACT act, byte[] result) {
 		ICallback clientCallback = clientCallbacks.get(act);
-		clientCallback.resultReturned(act, result);
+		
+		try
+        {
+	        clientCallback.resultReturned(act, Common.getMarshaller().deserialize(result));
+        }
+        catch(MarshallingException e)
+        {
+	        e.printStackTrace();
+        }
     }
 	
 	private InetSocketAddress getInetSocketAddress(IAOR aor) {
