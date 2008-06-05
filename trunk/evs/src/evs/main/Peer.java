@@ -16,13 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import evs.core.ClientRequestHandler;
 import evs.core.Common;
-import evs.core.LifecycleManager;
 import evs.core.ObjectReference;
 import evs.core.ServerConnectionHandler;
 import evs.exception.IllegalObjectException;
-import evs.exception.NotSupportedException;
 import evs.exception.RemotingException;
 import evs.interfaces.IClientProxy;
 import evs.interfaces.IClientRequestHandler;
@@ -178,8 +175,6 @@ public class Peer implements Runnable {
 			if (command.equals("help")) {
 				stdout.println("connect=<remotePort>");
 				stdout.println("  connect the peer to this port");
-				stdout.println("create-object=<className>");
-				stdout.println("  create a new server object");
 				stdout.println("create-proxy=<className>");
 				stdout.println("  create a new client proxy");
 				stdout.println("invoke=<proxy>,<method>,<argument>,...");
@@ -217,8 +212,6 @@ public class Peer implements Runnable {
 			if (key.equals("connect")) {
 				int port = Integer.parseInt(value);
 				remoteAddress = new InetSocketAddress(port);
-			} else if (key.equals("create-object")) {
-				createObject(value);
 			} else if (key.equals("create-proxy")) {
 				createProxy(value);
 			} else if (key.equals("invoke")) {
@@ -243,19 +236,6 @@ public class Peer implements Runnable {
 	private synchronized void addProxy(IClientProxy proxy) {
 		clientProxies.put(proxyNumber,proxy);
 		proxyNumber++;
-	}
-	
-	private void createObject(String className) {
-		IObjectReference ref = new ObjectReference(className,className + "Invoker");
-		try {
-			lifeCycleManager.newInstance(ref);
-		} catch (NotSupportedException e) {
-			e.printStackTrace();
-			return;
-		} catch (IllegalObjectException e) {
-			e.printStackTrace();
-			return;
-		}
 	}
 	
 	private void createProxy(String className) {
@@ -300,7 +280,6 @@ public class Peer implements Runnable {
 		}
 		
 		IClientProxy proxy = IClientProxy.class.cast(object);
-		//proxy.newInstance();
 		addProxy(proxy);
 	}
 	
@@ -315,31 +294,31 @@ public class Peer implements Runnable {
 			stderr.println("An invocation requires at least a proxy id and a method signature.");
 			return;
 		}
+		
 		Integer proxyId = Integer.valueOf(values[0]);
 		IClientProxy proxy = getProxy(proxyId);
 		Class<?> clazz = proxy.getClass();
 		Method[] methods = clazz.getMethods();
 		Method method = null;
+		Class<?>[] parameterTypes = null;
+		int argc = 0;
 		for (int x = 0; x < methods.length; x++) {
 			String methodName = methods[x].getName();
 			if (methodName.equals(values[1])) {
 				method = methods[x];
-				break;
+				parameterTypes = method.getParameterTypes();
+				argc = parameterTypes.length;
+				if ((argc + 2) == values.length) {
+					break;
+				} else {
+					method = null;
+				}
 			}
 		}
 		
 		if (method == null) {
 			stderr.println("ERROR invoke method failed.");
 			stderr.println("The method \"" + values[1] + "\" was not found.");
-			return;
-		}
-		
-		Class<?>[] parameterTypes = method.getParameterTypes();
-		int argc = parameterTypes.length;
-		if ((argc + 2) != values.length) {
-			stderr.println("ERROR invoke method failed.");
-			stderr.println("The method \"" + values[1] +
-				"\" requires " + parameterTypes.length + " arguments.");
 			return;
 		}
 		
