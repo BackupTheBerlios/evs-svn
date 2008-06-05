@@ -44,6 +44,7 @@ public class PollObjectRequestor implements IPollObjectRequestor {
 		byte[] response;
 		if (aor.isLocal()) {
 			try {
+				// TODO should this run through the request handler queue?
 				response = Common.getInvocationDispatcher().invoke(request);
 			} catch (RemotingException e) {
 				pollObject.setException(e);
