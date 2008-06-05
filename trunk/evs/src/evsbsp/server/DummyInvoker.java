@@ -67,6 +67,10 @@ public class DummyInvoker extends AInvoker{
 
 		Common.getObjectManager().invocationDone(object.getObjectReference().getReference(), localObject);
 		
+		for(IInterceptor interceptor: Common.getServerInterceptors().getInterceptors()){
+			interceptor.afterInvocation(object);
+		}
+		
 		return object;
 	}
 }

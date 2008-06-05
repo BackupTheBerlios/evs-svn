@@ -11,6 +11,7 @@ import evs.interfaces.IObjectReference;
 import evs.interfaces.IPollObject;
 import evsbsp.server.Dummy;
 import evsbsp.server.DummyInvoker;
+import evsbsp_old.client.DummyProxy;
 
 
 public class Client implements ICallback{
