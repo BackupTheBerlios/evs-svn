@@ -44,7 +44,7 @@ public class DummyProxy extends AClientProxy implements IDummyOperations  {
 		arguments.add(a);
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "testCall", arguments, "void");
-			requestor.invoke(object, true);
+			requestor.invoke(object, true, callback, act);
 		} catch(RemotingException ex){
 			 if(ex instanceof DummyException) throw (DummyException) ex;
 			 if(ex instanceof IllegalObjectException) throw new NotSupportedException(ex.getMessage());
