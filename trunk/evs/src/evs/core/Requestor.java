@@ -13,6 +13,9 @@ import evs.interfaces.IClientRequestHandler;
 import evs.interfaces.IInterceptor;
 import evs.interfaces.IInvocationObject;
 import evs.interfaces.ILocation;
+import evs.interfaces.IMarshaller;
+import evs.interfaces.IPollObject;
+import evs.interfaces.IPollObjectRequestor;
 import evs.interfaces.IRequestor;
 
 public class Requestor implements IRequestor {
@@ -36,31 +39,13 @@ public class Requestor implements IRequestor {
 			marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
 		} else {
 		*/
-		ILocation location = objectReference.getLocation();
-		String hostName = location.getHostname();
-		String portString = location.getPort();
-		int port = Integer.parseInt(portString);
-		InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
-		
-		
-		switch(object.getRequestType()){
-			case SYNC:
-
-				marshalledResponse = handler.send(socketAddress,marshalledRequest);
-				
-				if (marshalledResponse.length == 0) {
-					throw new RemotingException("The remote invocation failed.");
-				}
-				IInvocationObject response = (IInvocationObject) Common.getMarshaller().deserialize(marshalledResponse);
-				return response.getReturnParam();
-			case POLL_OBJECT:
-				//TODO
-			case RESULT_CALLBACK:
-				//marshalledResponse = send_callback(socketAddress, marshalledRequest, this);
-				// TODO save callback received from client with according ACT in map
-			default:
-				//marshalledResponse = send_poll(socketAddress, marshalledRequest);
+		InetSocketAddress socketAddress = getInetSocketAddress(objectReference);
+		marshalledResponse = handler.send(socketAddress,marshalledRequest);
+		if (marshalledResponse.length == 0) {
+			throw new RemotingException("The remote invocation failed.");
 		}
+		IInvocationObject response = (IInvocationObject) Common.getMarshaller().deserialize(marshalledResponse);
+		return response.getReturnParam();
 	}
 	
 	// Fire and Forget 
@@ -91,11 +76,28 @@ public class Requestor implements IRequestor {
 			handler.send(socketAddress,marshalledRequest);
 		}
 	}
+	
+	private IPollObject invokePoll(IInvocationObject invocationObject) {
+		IPollObject pollObject = new PollObject();
+		IMarshaller marshaller = Common.getMarshaller();
+		IPollObjectRequestor pollObjectRequestor =
+			new PollObjectRequestor(invocationObject,marshaller,pollObject);
+		pollObjectRequestor.start();
+		return pollObject;
+	}
 
-	public void returnResult(IACT act, byte[] result)
-    {
+	public void returnResult(IACT act, byte[] result) {
 		ICallback clientCallback = clientCallbacks.get(act);
 		clientCallback.resultReturned(act, result);
     }
+	
+	private InetSocketAddress getInetSocketAddress(IAOR aor) {
+		ILocation location = aor.getLocation();
+		String hostName = location.getHostname();
+		String portString = location.getPort();
+		int port = Integer.parseInt(portString);
+		InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
+		return socketAddress;
+	}
 	
 }

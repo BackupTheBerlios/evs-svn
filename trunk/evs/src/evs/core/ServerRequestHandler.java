@@ -22,7 +22,6 @@ public class ServerRequestHandler implements IServerRequestHandler {
 	
 	private Socket socket;
 	private IInvocationDispatcher invocationDispatcher;
-	private volatile boolean listen = true;
 	
 	public ServerRequestHandler(Socket socket) {
 		this.socket = socket;
@@ -42,36 +41,31 @@ public class ServerRequestHandler implements IServerRequestHandler {
 		DataInputStream dataInputStream = new DataInputStream(inputStream);
 		DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 		
-		while (listen) {
-			int length;
-			try {
-				length = dataInputStream.readInt();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return;
-			}
-			byte[] request = new byte[length];
-			try {
-				dataInputStream.readFully(request);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return;
-			}
-			byte[] response = invoke(request);
-			try {
-				dataOutputStream.writeInt(response.length);
-				dataOutputStream.write(response);
-				dataOutputStream.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return;
-			}
+		int length;
+		try {
+			length = dataInputStream.readInt();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		byte[] request = new byte[length];
+		try {
+			dataInputStream.readFully(request);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
 		}
 		
+		byte[] response = invoke(request);
+		
 		try {
+			dataOutputStream.writeInt(response.length);
+			dataOutputStream.write(response);
+			dataOutputStream.flush();
 			socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return;
 		}
 	}
 	
@@ -85,9 +79,7 @@ public class ServerRequestHandler implements IServerRequestHandler {
 		return t;
 	}
 	
-	public void stop() {
-		listen = false;
-	}
+	public void stop() {}
 	
 	private byte[] invoke(byte[] request) {
 		byte[] response;

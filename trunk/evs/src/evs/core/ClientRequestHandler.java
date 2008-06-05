@@ -10,8 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 import evs.exception.RemotingException;
 import evs.interfaces.IClientRequestHandler;
@@ -22,11 +20,7 @@ import evs.interfaces.IClientRequestHandler;
  */
 public class ClientRequestHandler implements IClientRequestHandler {
 	
-	private Map<SocketAddress,Socket> connections; // TODO synchronize
-	
-	public ClientRequestHandler() {
-		connections = new HashMap<SocketAddress,Socket>();
-	}
+	public ClientRequestHandler() {}
 
 	public byte[] receive() throws RemotingException {
 		return null; // TODO implement
@@ -45,15 +39,11 @@ public class ClientRequestHandler implements IClientRequestHandler {
 	 * @throws RemotingException
 	 */
 	private Socket sendRequest(SocketAddress address, byte[] request) throws RemotingException {
-		Socket socket = connections.get(address);
-		if (socket == null) { // create new connection
-			socket = new Socket();
-			try {
-				socket.connect(address);
-			} catch (IOException e) {
-				throw new RemotingException(e);
-			}
-			connections.put(address,socket);
+		Socket socket = new Socket();
+		try {
+			socket.connect(address);
+		} catch (IOException e) {
+			throw new RemotingException(e);
 		}
 		OutputStream outputStream;
 		try {
@@ -98,6 +88,7 @@ public class ClientRequestHandler implements IClientRequestHandler {
 		byte[] response = new byte[messageLength];
 		try {
 			dataInputStream.readFully(response);
+			socket.close();
 		} catch (IOException e) {
 			throw new RemotingException(e);
 		}
