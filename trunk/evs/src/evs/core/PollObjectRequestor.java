@@ -1,9 +1,4 @@
-/**
- * 
- */
 package evs.core;
-
-import java.net.InetSocketAddress;
 
 import evs.exception.MarshallingException;
 import evs.exception.RemotingException;
