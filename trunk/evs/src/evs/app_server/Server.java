@@ -1,10 +1,11 @@
 package evs.app_server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import evs.entities.Customer;
 import evs.entities.Order;
 import evs.entities.Product;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -72,7 +73,7 @@ public class Server implements IServer {
         }
     }
 
-    public List<Product> listPorducts () {
+    public List<Product> listProducts () {
         return products;
     }
 

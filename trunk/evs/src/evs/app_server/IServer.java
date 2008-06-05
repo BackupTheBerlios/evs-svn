@@ -1,9 +1,10 @@
 package evs.app_server;
 
+import java.util.List;
+
 import evs.entities.Customer;
 import evs.entities.Order;
 import evs.entities.Product;
-import java.util.List;
 
 /**
  *
@@ -18,7 +19,7 @@ public interface IServer {
 
     void createProduct (Product product);
 
-    List<Product> listPorducts ();
+    List<Product> listProducts ();
 
     Customer login (String userName, String password);
 

@@ -1,6 +1,5 @@
 package evs.interfaces;
 
-import evs.core.ACT;
 
 public interface ICallback {
 	

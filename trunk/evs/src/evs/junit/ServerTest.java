@@ -1,16 +1,17 @@
 package evs.junit;
 
-import evs.app_server.IServer;
-import evs.app_server.Server;
-import evs.entities.Customer;
-import evs.entities.Product;
 import java.math.BigDecimal;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import evs.app_server.IServer;
+import evs.app_server.Server;
+import evs.entities.Customer;
+import evs.entities.Product;
 
 public class ServerTest {
     
@@ -47,7 +48,7 @@ public class ServerTest {
     
     @Test
     public void testProducts () {
-        List<Product> products = server.listPorducts ();
+        List<Product> products = server.listProducts ();
         Assert.assertEquals (products.get (0).getId (), 0);
         Assert.assertEquals (products.get (2).getId (), 2);
         Assert.assertEquals (products.get (0).getName (), "Luftmatratze");
@@ -56,7 +57,7 @@ public class ServerTest {
         Product product = products.get (0);
         product.setPrice (new BigDecimal (24.99));
         server.updateProduct (product);
-        products = server.listPorducts ();
+        products = server.listProducts ();
         Assert.assertEquals (product, products.get (0));
     }
     

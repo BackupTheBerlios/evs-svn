@@ -77,7 +77,7 @@ public class Requestor implements IRequestor {
 		}
 	}
 	
-	private IPollObject invokePoll(IInvocationObject invocationObject) {
+	public IPollObject invokePoll(IInvocationObject invocationObject) {
 		IPollObject pollObject = new PollObject();
 		IMarshaller marshaller = Common.getMarshaller();
 		IPollObjectRequestor pollObjectRequestor =

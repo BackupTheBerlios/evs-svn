@@ -3,7 +3,6 @@
  */
 package evs.interfaces;
 
-import evs.core.ACT;
 import evs.exception.RemotingException;
 
 /**
