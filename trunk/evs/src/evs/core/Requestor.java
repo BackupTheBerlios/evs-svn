@@ -68,11 +68,7 @@ public class Requestor implements IRequestor {
 			// TODO call Request Handler
 			Common.getInvocationDispatcher().invoke(marshalledRequest);
 		} else {
-			ILocation location = objectReference.getLocation();
-			String hostName = location.getHostname();
-			String portString = location.getPort();
-			int port = Integer.parseInt(portString);
-			InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
+			InetSocketAddress socketAddress = getInetSocketAddress(objectReference);
 			handler.send(socketAddress,marshalledRequest);
 		}
 	}
