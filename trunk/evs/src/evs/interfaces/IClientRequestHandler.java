@@ -27,15 +27,6 @@ public interface IClientRequestHandler {
 	 * 
 	 * @param address the address of the request handler.
 	 * @param request the bytes of the serialized request.
-	 * @return the bytes of the serialized response.
-	 * @throws RemotingException
-	 */
-	byte[] send_callback(SocketAddress address, byte[] request, IRequestor requestor) throws RemotingException;
-
-	/**
-	 * 
-	 * @param address the address of the request handler.
-	 * @param request the bytes of the serialized request.
 	 * @throws RemotingException
 	 */
 	void send_fireforget(SocketAddress address, byte[] request) throws RemotingException;

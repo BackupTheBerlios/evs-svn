@@ -7,10 +7,12 @@ import java.util.Map;
 import dummy.exception.DummyException;
 
 import evs.exception.MarshallingException;
+import evs.exception.NotSupportedException;
 import evs.exception.RemotingException;
 import evs.interfaces.IACT;
 import evs.interfaces.IAOR;
 import evs.interfaces.ICallback;
+import evs.interfaces.IClientRequestHandler;
 import evs.interfaces.IInterceptor;
 import evs.interfaces.IInvocationObject;
 import evs.interfaces.ILocation;
@@ -18,6 +20,7 @@ import evs.interfaces.IMarshaller;
 import evs.interfaces.IPollObject;
 import evs.interfaces.IPollObjectRequestor;
 import evs.interfaces.IRequestor;
+import evs.interfaces.IResultCallbackHandler;
 
 public class Requestor implements IRequestor {
 	
@@ -31,7 +34,8 @@ public class Requestor implements IRequestor {
 			interceptor.beforeInvocation(object);
 		}
 		
-		byte[] marshalledRequest = Common.getMarshaller().serialize(object);
+		IMarshaller marshaller = Common.getMarshaller();
+		byte[] marshalledRequest = marshaller.serialize(object);
 		
 		IAOR objectReference = object.getObjectReference();
 
@@ -39,33 +43,35 @@ public class Requestor implements IRequestor {
 			return Common.getInvocationDispatcher().invoke(marshalledRequest);
 		
 		InetSocketAddress socketAddress = getInetSocketAddress(objectReference);
+		IClientRequestHandler clientRequestHandler = Common.getClientRequesthandler();
 
 		Object returnObject = null;
-		switch(style)
-		{
+		switch(style) {
 			case SYNC:
-				returnObject = Common.getMarshaller().deserialize(Common.getClientRequesthandler().send(socketAddress, marshalledRequest));
+				returnObject = marshaller.deserialize(clientRequestHandler.send(socketAddress, marshalledRequest));
 				break;
 			case POLL_OBJECT:
-				if(act != null)
+				if (act != null)
 					throw new DummyException("No ACT is needed with InvocationStyle POLL_OBJECT");
-				
 				IPollObject pollObject = new PollObject();
-				IMarshaller marshaller = Common.getMarshaller();
-				IPollObjectRequestor pollObjectRequestor = new PollObjectRequestor(object, marshaller, pollObject);
+				IPollObjectRequestor pollObjectRequestor =
+					new PollObjectRequestor(object, marshaller, pollObject);
 				pollObjectRequestor.start();
 				returnObject = pollObject;
 				break;
 			case FIRE_FORGET:
-				Common.getClientRequesthandler().send_fireforget(socketAddress, marshalledRequest);
+				clientRequestHandler.send_fireforget(socketAddress, marshalledRequest);
 				break;
 			case RESULT_CALLBACK:
+				if (act == null)
+					throw new DummyException("An ACT is required for the RESULT_CALLBACK invocation style.");
+				clientCallbacks.put(act,callback);
+				IResultCallbackHandler resultCallbackHandler =
+					new ResultCallbackHandler(socketAddress, marshalledRequest, this, act);
+				resultCallbackHandler.start();
+				break;
 			default:
-				if(act == null)
-					throw new DummyException("An ACT is needed for RESULT_CALLBACK InvocationStyle.");
-
-				clientCallbacks.put(act, callback);				
-				Common.getClientRequesthandler().send_callback(socketAddress, marshalledRequest, this);
+				throw new NotSupportedException("The invocation style " + style + " is not supported.");
 		}
 		
 		//handle interceptors

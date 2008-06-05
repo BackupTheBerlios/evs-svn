@@ -13,7 +13,6 @@ import java.net.SocketAddress;
 
 import evs.exception.RemotingException;
 import evs.interfaces.IClientRequestHandler;
-import evs.interfaces.IRequestor;
 
 /**
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
@@ -95,13 +94,6 @@ public class ClientRequestHandler implements IClientRequestHandler {
 		}
 		return response;
 	}
-
-	public byte[] send_callback(SocketAddress address, byte[] request,
-            IRequestor requestor) throws RemotingException
-    {
-	    // TODO Auto-generated method stub
-	    return null;
-    }
 
 	public void send_fireforget(SocketAddress address, byte[] request)
             throws RemotingException
