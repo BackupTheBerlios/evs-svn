@@ -30,6 +30,8 @@ public class DummyProxy extends AClientProxy implements IDummyOperations{
 	public Object testCall(Integer a, IACT act) throws dummy.exception.DummyException, NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		arguments.add(a);
+		// TODO add to IDL generator
+		arguments.add(act);
 		Object returnObject = null;
 
 		try{
@@ -44,6 +46,7 @@ public class DummyProxy extends AClientProxy implements IDummyOperations{
 
 	public Object getCounter(IACT act) throws dummy.exception.DummyException, NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
+		arguments.add(act);
 		Object returnObject = null;
 
 		try{

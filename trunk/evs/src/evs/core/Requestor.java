@@ -65,7 +65,8 @@ public class Requestor implements IRequestor {
 			case RESULT_CALLBACK:
 				if (act == null)
 					throw new DummyException("An ACT is required for the RESULT_CALLBACK invocation style.");
-				clientCallbacks.put(act,callback);
+				
+				clientCallbacks.put(act, callback);
 				IResultCallbackHandler resultCallbackHandler =
 					new ResultCallbackHandler(socketAddress, marshalledRequest, this, act);
 				resultCallbackHandler.start();
@@ -88,7 +89,7 @@ public class Requestor implements IRequestor {
 		
 		try
         {
-	        clientCallback.resultReturned(act, Common.getMarshaller().deserialize(result));
+	        clientCallback.resultReturned(act, (Common.getMarshaller().deserialize(result)).getReturnParam());
         }
         catch(MarshallingException e)
         {

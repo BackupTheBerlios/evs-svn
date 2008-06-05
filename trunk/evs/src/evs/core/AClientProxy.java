@@ -25,6 +25,7 @@ public abstract class AClientProxy implements IClientProxy{
 	
 	public AClientProxy(ICallback callback){
 		this.requestor = new Requestor();
+		this.callback = callback;
 		requestType = InvocationStyle.RESULT_CALLBACK;
 	}
 

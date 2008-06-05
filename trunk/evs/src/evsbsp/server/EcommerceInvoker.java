@@ -56,7 +56,7 @@ public class EcommerceInvoker extends AInvoker{
 				object.setReturnParam(returnValue);
 				break;
 			case 4:
-				Object returnValue = localObject.login((String) object.getArguments().get(0), (String) object.getArguments().get(1), (IACT) object.getArguments().get(2));
+				returnValue = localObject.login((String) object.getArguments().get(0), (String) object.getArguments().get(1), (IACT) object.getArguments().get(2));
 				object.setReturnParam(returnValue);
 				break;
 			case 5:
@@ -77,7 +77,8 @@ public class EcommerceInvoker extends AInvoker{
 				return object;
 			default:
 				throw new IllegalMethodException("Method " +  object.getOperationName() + " not supported");
-
+		}
+		
 		Common.getObjectManager().invocationDone(object.getObjectReference().getReference(), localObject);
 
 		for(IInterceptor interceptor: Common.getServerInterceptors().getInterceptors()){

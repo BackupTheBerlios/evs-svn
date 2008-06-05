@@ -39,7 +39,7 @@ public class ResultCallbackHandler implements IResultCallbackHandler {
 			e.printStackTrace();
 			return;
 		}
-		requestor.returnResult(act,response);
+		requestor.returnResult(act, response);
 	}
 
 	public Thread start() {

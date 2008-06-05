@@ -2,7 +2,6 @@ package dummy.client;
 
 import dummy.server.Dummy;
 import dummy.server.DummyInvoker;
-import dummy.client.DummyProxy;
 import evs.core.ACT;
 import evs.core.Common;
 import evs.core.InvocationStyle;
@@ -11,7 +10,6 @@ import evs.core.ObjectReference;
 import evs.interfaces.IACT;
 import evs.interfaces.ICallback;
 import evs.interfaces.IObjectReference;
-import evs.interfaces.IPollObject;
 
 
 public class Client implements ICallback{
@@ -71,32 +69,34 @@ public class Client implements ICallback{
 //			Thread.sleep(10000);
 			
 			//dummy.newInstance(new ACT());
-			dummy.setRequestType(InvocationStyle.POLL_OBJECT);
+			//dummy.setRequestType(InvocationStyle.POLL_OBJECT);
 			
-			IPollObject poll = (IPollObject)dummy.getCounter(null);
-			while(!poll.isResultAvailable())
-				Thread.sleep(1000);
-			System.out.println("Got result: " + poll.getResult());
-			
-			poll = (IPollObject)dummy.testCall(2, null);
-			while(!poll.isResultAvailable())
-				Thread.sleep(1000);
-			System.out.println("Got result: " + poll.getResult() + ", hopefully the counter was increased.");
-			
-			poll = (IPollObject)dummy.getCounter(null);
-			while(!poll.isResultAvailable())
-				Thread.sleep(1000);
-			System.out.println("Got result: " + poll.getResult());
-			
-//			// fire and forget
-//			dummy.setRequestType(InvocationStyle.FIRE_FORGET);
-//			dummy.testCall(5, null);
-//			dummy.getCounter(new ACT());
+//			IPollObject poll = (IPollObject)dummy.getCounter(null);
+//			while(!poll.isResultAvailable())
+//				Thread.sleep(1000);
+//			System.out.println("Got result: " + poll.getResult());
 //			
-//			// callback
-//			dummy.setRequestType(InvocationStyle.RESULT_CALLBACK);
-//			dummy.testCall(3, new ACT());
-//			dummy.getCounter(new ACT());
+//			poll = (IPollObject)dummy.testCall(2, null);
+//			while(!poll.isResultAvailable())
+//				Thread.sleep(1000);
+//			System.out.println("Got result: " + poll.getResult() + ", hopefully the counter was increased.");
+//			
+//			poll = (IPollObject)dummy.getCounter(null);
+//			while(!poll.isResultAvailable())
+//				Thread.sleep(1000);
+//			System.out.println("Got result: " + poll.getResult());
+			
+			
+			
+			// fire and forget
+			dummy.setRequestType(InvocationStyle.RESULT_CALLBACK);
+			dummy.testCall(5, new ACT());
+			dummy.getCounter(new ACT());
+			
+			// callback
+			//dummy.setRequestType(InvocationStyle.RESULT_CALLBACK);
+			dummy.testCall(3, new ACT());
+			dummy.getCounter(new ACT());
 			
 			
 		} catch (Exception ex){
@@ -106,8 +106,8 @@ public class Client implements ICallback{
 	}
 	public void resultReturned(IACT act, Object result) {
 		// TODO Auto-generated method stub
-		Integer i = (Integer)result;
-		System.out.println("[*] Value after incrementing=" + i + ", ACT = " + act.getTimestamp());
+		//Integer i = (Integer)result;
+		System.out.println("[*] Value after incrementing=" + result + ", ACT = " + act.getTimestamp());
 	}
 
 }
