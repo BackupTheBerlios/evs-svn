@@ -22,6 +22,7 @@ public class Requestor implements IRequestor {
 	
 	private Map<IACT, ICallback> clientCallbacks = new HashMap<IACT, ICallback>();
 	
+	// Callback
 	public Object invoke(IInvocationObject object, boolean isVoid, ICallback callback, IACT act) throws RemotingException {
 		
 		//handle interceptors
@@ -73,6 +74,7 @@ public class Requestor implements IRequestor {
 		}
 	}
 	
+	// Poll Object
 	public IPollObject invokePoll(IInvocationObject invocationObject) {
 		IPollObject pollObject = new PollObject();
 		IMarshaller marshaller = Common.getMarshaller();
