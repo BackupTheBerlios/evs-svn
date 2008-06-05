@@ -2,7 +2,7 @@ package dummy.client;
 
 import dummy.server.Dummy;
 import dummy.server.DummyInvoker;
-import dummy_old.client.DummyProxy;
+import dummy.client.DummyProxy;
 import evs.core.ACT;
 import evs.core.Common;
 import evs.core.InvocationStyle;
