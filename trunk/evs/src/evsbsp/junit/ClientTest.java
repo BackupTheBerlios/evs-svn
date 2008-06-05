@@ -1,19 +1,13 @@
 package evsbsp.junit;
 
-import evs.core.ACT;
-import evs.exception.NotSupportedException;
-import evsbsp.client.Client;
-import java.math.BigDecimal;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import evsbsp.entities.Customer;
-import evsbsp.entities.Product;
-import evsbsp.server.Ecommerce;
+import evs.core.Common;
+import evs.exception.NotSupportedException;
+import evsbsp.client.Client;
 
 public class ClientTest {
 
@@ -25,6 +19,7 @@ public class ClientTest {
     @Before
     public void setUp () {
         client = new Client ();
+        Common.loadProperties();
     }
 
     @After
