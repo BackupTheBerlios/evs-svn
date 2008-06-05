@@ -3,6 +3,7 @@ package evs.app_server;
 import evs.entities.Customer;
 import evs.entities.Order;
 import evs.entities.Product;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +19,11 @@ public class Server implements IServer {
     private List<Customer> customers;
     private List<Product> products;
 
+    private Server () {
+        customers = new ArrayList<Customer> ();
+        products = new ArrayList<Product> ();
+    }
+
     public void createCustomer (Customer customer) {
         customer.setId (customerSequence);
         customers.add (customer);
@@ -25,21 +31,13 @@ public class Server implements IServer {
     }
 
     public void updateCustomer (Customer customer) {
-        Customer cust = findCustomer (customer.getId ());
-        if (cust != null) {
-            cust.setName (customer.getName ());
-            cust.setUserName (customer.getUserName ());
-            cust.setPassword (customer.getPassword ());
-        }
-    }
-
-    private Customer findCustomer (int id) {
-        for (Customer customer : customers) {
-            if (customer.getId () == id) {
-                return customer;
+        for (Customer cust : customers) {
+            if (customer.getId () == customer.getId ()) {
+                cust.setName (customer.getName ());
+                cust.setUserName (customer.getUserName ());
+                cust.setPassword (customer.getPassword ());
             }
         }
-        return null;
     }
 
     public void createProduct (Product product) {
@@ -67,16 +65,17 @@ public class Server implements IServer {
     }
 
     public void buyOrder (Order order) {
-        Customer customer = findCustomer (order.getCustomer ().getId ());
-        if (customer != null) {
-            customer.addOrder (order);
+        for (Customer customer : customers) {
+            if (customer.getId () == customer.getId ()) {
+                customer.addOrder (order);
+            }
         }
     }
-    
+
     public List<Product> listPorducts () {
         return products;
     }
-    
+
     public static Server getInstance () {
         if (server == null) {
             server = new Server ();

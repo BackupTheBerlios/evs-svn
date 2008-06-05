@@ -23,8 +23,7 @@ public class Customer implements Serializable {
             orders = new ArrayList<Order> ();
         }
 
-        public Customer (int id, String name, String userName, String password) {
-            this.id = id;
+        public Customer (String name, String userName, String password) {
             this.name = name;
             this.userName = userName;
             this.password = password;
