@@ -8,6 +8,8 @@ import evsbsp.IDummyOperations;
 
 
 public class Dummy extends ARemoteObject implements IDummyOperations  {
+
+    private static final long serialVersionUID = 3420679641630036612L;
 	private Integer counter;
 	
 	public Dummy(){

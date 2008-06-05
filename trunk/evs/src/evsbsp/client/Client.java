@@ -40,17 +40,20 @@ public class Client implements ICallback{
 		try {
 			
 			IACT act = new ACT();
+
+			// loop for isResultAvailable()
+//			IPollObject poll = dummy.testCallPoll(1);
 			
 			dummy.newInstance(act);
 			Integer value = dummy.getCounter(act);
 			System.out.println("[*] Initial value=" + value);
-			dummy.testCall(new Integer(1337));
+			dummy.testCall(new Integer(1337), null);
 			value = dummy.getCounter(act);
 			System.out.println("[*] Value after incrementing=" + value);
-			dummy.testCall(new Integer(1));
+			dummy.testCall(new Integer(1), null);
 			value = dummy.getCounter(act);
 			System.out.println("[*] Value after incrementing=" + value);
-			dummy.testCall(new Integer(1));
+			dummy.testCall(new Integer(1), null);
 			value = dummy.getCounter(act);
 			System.out.println("[*] Value after incrementing=" + value);
 			Thread.sleep(1000);

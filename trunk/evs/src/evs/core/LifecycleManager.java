@@ -316,7 +316,7 @@ public class LifecycleManager implements ILifecycleManager {
 	private void clearObject(String name){
 		try {
 			File file = new File(Common.passivationDir() + name);
-			//file.delete();
+			file.delete();
 		} catch (Exception ex){}
 	}
 	

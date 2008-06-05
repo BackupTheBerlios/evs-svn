@@ -17,6 +17,7 @@ import evs.exception.RemotingException;
 import evs.interfaces.IACT;
 import evs.interfaces.ICallback;
 import evs.interfaces.IInvocationObject;
+import evs.interfaces.IPollObject;
 import evsbsp.IDummyOperations;
 import evsbsp.exception.DummyException;
 
@@ -44,7 +45,21 @@ public class DummyProxy extends AClientProxy implements IDummyOperations  {
 		arguments.add(a);
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "testCall", arguments, "void");
-			requestor.invoke(object, true, callback, act);
+			switch(this.requestType)
+			{
+				case POLL_OBJECT:
+					throw new DummyException("Use 'testCallPoll' method for POLL_OBJECT InvocationStyle");
+				case FIRE_FORGET:
+					requestor.invoke(object, true);
+					break;
+				case RESULT_CALLBACK:
+				default:
+					if(act == null)
+						throw new DummyException("An ACT is needed for RESULT_CALLBACK InvocationStyle.");
+
+					requestor.invoke(object, true, callback, act);
+					break;
+			}
 		} catch(RemotingException ex){
 			 if(ex instanceof DummyException) throw (DummyException) ex;
 			 if(ex instanceof IllegalObjectException) throw new NotSupportedException(ex.getMessage());
@@ -55,12 +70,16 @@ public class DummyProxy extends AClientProxy implements IDummyOperations  {
 		}
 	}
 	
-	public void testCall(Integer a) throws DummyException, NotSupportedException{
+	public IPollObject testCallPoll(Integer a) throws DummyException, NotSupportedException
+	{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		arguments.add(a);
+		
+		IPollObject poll = null;
+		
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "testCall", arguments, "void");
-			requestor.invoke(object, true);
+			poll = requestor.invokePoll(object);
 		} catch(RemotingException ex){
 			 if(ex instanceof DummyException) throw (DummyException) ex;
 			 if(ex instanceof IllegalObjectException) throw new NotSupportedException(ex.getMessage());
@@ -68,8 +87,26 @@ public class DummyProxy extends AClientProxy implements IDummyOperations  {
 			 if(ex instanceof NotSupportedException) throw (NotSupportedException) ex;
 			 System.out.println("[x] ERROR: " + ex.getClass().getName() + " :" + ex.getMessage());
 			 ex.printStackTrace();
-		}
+		}		
+		
+		return poll;
 	}
+	
+//	public void testCall(Integer a) throws DummyException, NotSupportedException{
+//		ArrayList<Object> arguments = new ArrayList<Object>();
+//		arguments.add(a);
+//		try{
+//			IInvocationObject object = new InvocationObject(getAOR(), "testCall", arguments, "void");
+//			requestor.invoke(object, true);
+//		} catch(RemotingException ex){
+//			 if(ex instanceof DummyException) throw (DummyException) ex;
+//			 if(ex instanceof IllegalObjectException) throw new NotSupportedException(ex.getMessage());
+//			 if(ex instanceof IllegalMethodException) throw new NotSupportedException(ex.getMessage());
+//			 if(ex instanceof NotSupportedException) throw (NotSupportedException) ex;
+//			 System.out.println("[x] ERROR: " + ex.getClass().getName() + " :" + ex.getMessage());
+//			 ex.printStackTrace();
+//		}
+//	}
 	
 	public Integer getCounter(IACT act) throws DummyException, NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();

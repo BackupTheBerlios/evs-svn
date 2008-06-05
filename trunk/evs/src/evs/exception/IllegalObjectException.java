@@ -2,6 +2,8 @@ package evs.exception;
 
 public class IllegalObjectException extends MiddlewareException {
 
+    private static final long serialVersionUID = -9193431443185554672L;
+
 	public IllegalObjectException() {
 		super();
 	}

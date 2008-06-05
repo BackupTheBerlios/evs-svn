@@ -12,6 +12,7 @@ import java.math.BigDecimal;
  */
 public class Product implements Serializable {
 	
+    private static final long serialVersionUID = -8971074237327665489L;
 	private int id;
 	private String name;
         private BigDecimal price;

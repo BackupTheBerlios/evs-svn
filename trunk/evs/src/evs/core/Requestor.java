@@ -75,7 +75,7 @@ public class Requestor implements IRequestor {
 	}
 	
 	// Poll Object
-	public IPollObject invokePoll(IInvocationObject invocationObject) {
+	public IPollObject invokePoll(IInvocationObject invocationObject) throws RemotingException {
 		IPollObject pollObject = new PollObject();
 		IMarshaller marshaller = Common.getMarshaller();
 		IPollObjectRequestor pollObjectRequestor =

@@ -4,6 +4,8 @@ package evsbsp.exception;
 
 public class DummyException extends evs.exception.RemotingException {
 
+    private static final long serialVersionUID = -7895063636696531151L;
+
 	public DummyException(){
 		super();
 	}

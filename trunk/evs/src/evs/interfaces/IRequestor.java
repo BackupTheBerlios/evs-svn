@@ -41,5 +41,12 @@ public interface IRequestor {
 	 * @param result result from call of remote object
 	 */
 	public void returnResult(IACT act, byte[] result);
+
+	/**
+	 * 
+	 * @param invocationObject the object to be sent
+	 * @return the IPollObject that the client polls
+	 */
+	public IPollObject invokePoll(IInvocationObject invocationObject) throws RemotingException;
 	
 }
