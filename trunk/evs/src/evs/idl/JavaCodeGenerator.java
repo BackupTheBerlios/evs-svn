@@ -62,6 +62,7 @@ public class JavaCodeGenerator {
 		for(IIDLParameter param: method.getParameters()){
 			writer.write("\t\targuments.add(" + param.getName() + ");\n");
 		}
+		writer.write("\t\targuments.add(act);\n");
 		writer.write("\t\tObject returnObject = null;\n\n");
 		writer.write("\t\ttry{\n");
 		writer.write("\t\t\tIInvocationObject object = new InvocationObject(getAOR(), \"");
@@ -175,7 +176,7 @@ public class JavaCodeGenerator {
 		writer.write("\t\tInteger index = (Integer) operations.get(object.getOperationName());\n");
 		writer.write("\t\tif(index == null) throw new IllegalMethodException(\"Method \" + object.getOperationName() + \" not supported\");\n\n");
 		
-		writer.write("\t\tif(index < 2){\n");
+		writer.write("\t\tif(index < "+ clazz.getMethods().size() + "){\n");
 		writer.write("\t\t\tlocalObject = (" + clazz.getName() + ") Common.getObjectManager().invocationArrived(object.getObjectReference().getReference());\n");
 		writer.write("\t\t\tif(localObject == null) throw new IllegalObjectException(\"Object \" + object.getObjectReference().getReference().getClientDependent() + \" not available\");\n\t\t}");
 		

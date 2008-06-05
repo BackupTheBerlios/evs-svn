@@ -29,6 +29,7 @@ public class EcommerceProxy extends AClientProxy implements IEcommerceOperations
 	public Object buyOrder(evsbsp.entities.Order order, IACT act) throws NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		arguments.add(order);
+		arguments.add(act);
 		Object returnObject = null;
 
 		try{
@@ -43,6 +44,7 @@ public class EcommerceProxy extends AClientProxy implements IEcommerceOperations
 	public Object createCustomer(evsbsp.entities.Customer customer, IACT act) throws NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		arguments.add(customer);
+		arguments.add(act);
 		Object returnObject = null;
 
 		try{
@@ -57,6 +59,7 @@ public class EcommerceProxy extends AClientProxy implements IEcommerceOperations
 	public Object createProduct(evsbsp.entities.Product product, IACT act) throws NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		arguments.add(product);
+		arguments.add(act);
 		Object returnObject = null;
 
 		try{
@@ -70,6 +73,7 @@ public class EcommerceProxy extends AClientProxy implements IEcommerceOperations
 
 	public Object listProducts(IACT act) throws NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
+		arguments.add(act);
 		Object returnObject = null;
 
 		try{
@@ -85,6 +89,7 @@ public class EcommerceProxy extends AClientProxy implements IEcommerceOperations
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		arguments.add(userName);
 		arguments.add(password);
+		arguments.add(act);
 		Object returnObject = null;
 
 		try{
@@ -99,6 +104,7 @@ public class EcommerceProxy extends AClientProxy implements IEcommerceOperations
 	public Object updateCustomer(evsbsp.entities.Customer customer, IACT act) throws NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		arguments.add(customer);
+		arguments.add(act);
 		Object returnObject = null;
 
 		try{
@@ -113,6 +119,7 @@ public class EcommerceProxy extends AClientProxy implements IEcommerceOperations
 	public Object updateProduct(evsbsp.entities.Product product, IACT act) throws NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		arguments.add(product);
+		arguments.add(act);
 		Object returnObject = null;
 
 		try{
