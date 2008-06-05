@@ -8,6 +8,7 @@ import evs.core.ObjectReference;
 import evs.interfaces.IACT;
 import evs.interfaces.ICallback;
 import evs.interfaces.IObjectReference;
+import evs.interfaces.IPollObject;
 import evsbsp.server.Dummy;
 import evsbsp.server.DummyInvoker;
 
@@ -68,18 +69,33 @@ public class Client implements ICallback{
 //			//dummy.destroy();
 //			Thread.sleep(10000);
 			
-			dummy.newInstance(new ACT());
-			dummy.getCounter(new ACT());
+			//dummy.newInstance(new ACT());
+			dummy.setRequestType(InvocationStyle.POLL_OBJECT);
 			
-			// fire and forget
-			dummy.setRequestType(InvocationStyle.FIRE_FORGET);
-			dummy.testCall(5, null);
-			dummy.getCounter(new ACT());
+			IPollObject poll = (IPollObject)dummy.getCounter(null);
+			while(!poll.isResultAvailable())
+				Thread.sleep(1000);
+			System.out.println("Got result: " + poll.getResult());
 			
-			// callback
-			dummy.setRequestType(InvocationStyle.RESULT_CALLBACK);
-			dummy.testCall(3, new ACT());
-			dummy.getCounter(new ACT());
+			poll = (IPollObject)dummy.testCall(2, null);
+			while(!poll.isResultAvailable())
+				Thread.sleep(1000);
+			System.out.println("Got result: " + poll.getResult() + ", hopefully the counter was increased.");
+			
+			poll = (IPollObject)dummy.getCounter(null);
+			while(!poll.isResultAvailable())
+				Thread.sleep(1000);
+			System.out.println("Got result: " + poll.getResult());
+			
+//			// fire and forget
+//			dummy.setRequestType(InvocationStyle.FIRE_FORGET);
+//			dummy.testCall(5, null);
+//			dummy.getCounter(new ACT());
+//			
+//			// callback
+//			dummy.setRequestType(InvocationStyle.RESULT_CALLBACK);
+//			dummy.testCall(3, new ACT());
+//			dummy.getCounter(new ACT());
 			
 			
 		} catch (Exception ex){

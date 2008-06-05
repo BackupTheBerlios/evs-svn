@@ -48,7 +48,7 @@ public class DummyInvoker extends AInvoker{
 				localObject.testCall((Integer) object.getArguments().get(0), (IACT) object.getArguments().get(1));
 				break;
 			case 1:
-				Object returnValue = localObject.getCounter((IACT) object.getArguments().get(1));
+				Object returnValue = localObject.getCounter((IACT) object.getArguments().get(0));
 				object.setReturnParam(returnValue);
 				break;
 			case 2:

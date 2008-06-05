@@ -42,6 +42,7 @@ public class DummyProxy extends AClientProxy implements IDummyOperations  {
 	public Object testCall(Integer a, IACT act) throws DummyException, NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		arguments.add(a);
+		arguments.add(act);
 		
 		Object returnObject = null;
 		
@@ -64,10 +65,11 @@ public class DummyProxy extends AClientProxy implements IDummyOperations  {
 	public Object getCounter(IACT act) throws DummyException, NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		Object returnObject = null;
+		arguments.add(act);		
 		
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "getCounter", arguments, "Integer");			
-			requestor.invoke(object, false, callback, act, requestType);
+			returnObject = requestor.invoke(object, false, callback, act, requestType);
 		} catch(RemotingException ex){
 			 if(ex instanceof DummyException) throw (DummyException) ex;
 			 if(ex instanceof IllegalObjectException) throw new NotSupportedException(ex.getMessage());

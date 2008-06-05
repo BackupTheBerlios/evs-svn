@@ -45,6 +45,8 @@ public class Requestor implements IRequestor {
 
 		switch(style)
 		{
+			case SYNC:
+				return Common.getMarshaller().deserialize(Common.getClientRequesthandler().send(socketAddress, marshalledRequest));
 			case POLL_OBJECT:
 				if(act != null)
 					throw new DummyException("No ACT is needed with InvocationStyle POLL_OBJECT");

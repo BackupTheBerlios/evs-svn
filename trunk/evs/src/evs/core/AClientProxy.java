@@ -45,7 +45,7 @@ public abstract class AClientProxy implements IClientProxy{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "newInstance", arguments, "String");
-			String objectId = (String) requestor.invoke(object, false, callback, act, InvocationStyle.RESULT_CALLBACK);
+			String objectId = (String) requestor.invoke(object, false, callback, act, InvocationStyle.SYNC);
 			this.aor.getReference().setInstanceId(objectId);
 		} catch(RemotingException ex){
 			 if(ex instanceof NotSupportedException) throw (NotSupportedException) ex;
