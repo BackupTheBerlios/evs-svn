@@ -25,8 +25,6 @@ public class Requestor implements IRequestor {
 	// Callback
 	public Object invoke(IInvocationObject object, boolean isVoid, ICallback callback, IACT act, InvocationStyle style) throws RemotingException {
 		
-		// TODO LOCAL INVOCATIONS
-		
 		//handle interceptors
 		for(IInterceptor interceptor: Common.getClientInterceptors().getInterceptors()){
 			interceptor.beforeInvocation(object);
@@ -35,12 +33,10 @@ public class Requestor implements IRequestor {
 		byte[] marshalledRequest = Common.getMarshaller().serialize(object);
 		
 		IAOR objectReference = object.getObjectReference();
+
+		if(objectReference.isLocal())
+			return Common.getInvocationDispatcher().invoke(marshalledRequest);
 		
-		/* TODO local invokes
-		if (objectReference.isLocal()) {
-			marshalledResponse = Common.getInvocationDispatcher().invoke(marshalledRequest);
-		} else {
-		*/
 		InetSocketAddress socketAddress = getInetSocketAddress(objectReference);
 
 		switch(style)
