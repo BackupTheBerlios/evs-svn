@@ -45,7 +45,7 @@ public abstract class AClientProxy implements IClientProxy{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "newInstance", arguments, "String");
-			String objectId = (String) requestor.invoke(object, false, callback, act);
+			String objectId = (String) requestor.invoke(object, false, callback, act, InvocationStyle.RESULT_CALLBACK);
 			this.aor.getReference().setInstanceId(objectId);
 		} catch(RemotingException ex){
 			 if(ex instanceof NotSupportedException) throw (NotSupportedException) ex;
@@ -58,7 +58,7 @@ public abstract class AClientProxy implements IClientProxy{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "keepAlive", arguments, "void");
-			requestor.invoke(object, true);
+			requestor.invoke(object, true, null, null, InvocationStyle.FIRE_FORGET);
 		} catch(RemotingException ex){
 			 if(ex instanceof NotSupportedException) throw (NotSupportedException) ex;
 			 System.out.println("[x] ERROR: " + ex.getClass().getName() + " :" + ex.getMessage());
@@ -70,7 +70,7 @@ public abstract class AClientProxy implements IClientProxy{
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "destroy", arguments, "void");
-			requestor.invoke(object, true);
+			requestor.invoke(object, true, null, null, InvocationStyle.FIRE_FORGET);
 		} catch(RemotingException ex){
 			 if(ex instanceof NotSupportedException) throw (NotSupportedException) ex;
 			 System.out.println("[x] ERROR: " + ex.getClass().getName() + " :" + ex.getMessage());
