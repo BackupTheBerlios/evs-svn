@@ -24,18 +24,11 @@ public interface IClientRequestHandler {
 	byte[] send(SocketAddress address, byte[] request) throws RemotingException;
 	
 	/**
-	 * 
+	 * Send the request without receiving a response.
 	 * @param address the address of the request handler.
 	 * @param request the bytes of the serialized request.
 	 * @throws RemotingException
 	 */
-	void send_fireforget(SocketAddress address, byte[] request) throws RemotingException;
-	
-	/**
-	 * Wait to receive the response.
-	 * @return the bytes of the serialized response.
-	 * @throws RemotingException
-	 */
-	byte[] receive() throws RemotingException;
+	void fireAndForget(SocketAddress address, byte[] request) throws RemotingException;
 	
 }

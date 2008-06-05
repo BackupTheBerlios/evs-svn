@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -16,11 +17,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import evs.core.ACT;
+import evs.core.Callback;
 import evs.core.Common;
 import evs.core.ObjectReference;
 import evs.core.ServerConnectionHandler;
 import evs.exception.IllegalObjectException;
 import evs.exception.RemotingException;
+import evs.interfaces.IACT;
+import evs.interfaces.ICallback;
 import evs.interfaces.IClientProxy;
 import evs.interfaces.IClientRequestHandler;
 import evs.interfaces.IInvocationDispatcher;
@@ -268,13 +273,31 @@ public class Peer implements Runnable {
 			return;
 		}
 		
-		Object object;
+		Constructor<?> constructor;
 		try {
-			object = clazz.newInstance();
+			constructor = clazz.getConstructor(ICallback.class);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			return;
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		Object object;
+		ICallback callback = new Callback();
+		try {
+			object = constructor.newInstance(callback);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			return;
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 			return;
 		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			return;
+		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 			return;
 		}
@@ -308,7 +331,7 @@ public class Peer implements Runnable {
 				method = methods[x];
 				parameterTypes = method.getParameterTypes();
 				argc = parameterTypes.length;
-				if ((argc + 2) == values.length) {
+				if ((argc + 1) == values.length) {
 					break;
 				} else {
 					method = null;
@@ -324,6 +347,7 @@ public class Peer implements Runnable {
 		
 		// set arguments
 		Object[] arguments = new Object[argc];
+		argc--; // minus ACT
 		for (int x = 0; x < argc; x++) {
 			String argumentString = values[x+2];
 			if (argumentString.length() > 0) {
@@ -342,6 +366,9 @@ public class Peer implements Runnable {
 				arguments[x] = null;
 			}
 		}
+		
+		IACT act = new ACT();
+		arguments[argc] = act;
 		
 		try {
 			method.invoke(proxy,arguments);

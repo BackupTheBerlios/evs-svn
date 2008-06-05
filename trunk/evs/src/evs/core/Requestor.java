@@ -52,7 +52,7 @@ public class Requestor implements IRequestor {
 				break;
 			case POLL_OBJECT:
 				if (act != null)
-					throw new DummyException("No ACT is needed with InvocationStyle POLL_OBJECT");
+					throw new DummyException("No ACT is needed for the POLL_OBJECT invocation style.");
 				IPollObject pollObject = new PollObject();
 				IPollObjectRequestor pollObjectRequestor =
 					new PollObjectRequestor(object, marshaller, pollObject);
@@ -60,7 +60,7 @@ public class Requestor implements IRequestor {
 				returnObject = pollObject;
 				break;
 			case FIRE_FORGET:
-				clientRequestHandler.send_fireforget(socketAddress, marshalledRequest);
+				clientRequestHandler.fireAndForget(socketAddress,marshalledRequest);
 				break;
 			case RESULT_CALLBACK:
 				if (act == null)

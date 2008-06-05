@@ -3,15 +3,16 @@
  */
 package evs.core;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
 import evs.exception.RemotingException;
 import evs.interfaces.IInvocationDispatcher;
+import evs.interfaces.IMessageHeader;
 import evs.interfaces.IServerRequestHandler;
 
 /**
@@ -29,28 +30,24 @@ public class ServerRequestHandler implements IServerRequestHandler {
 
 	public void run() {
 		InputStream inputStream;
-		OutputStream outputStream;
+		ObjectInputStream objectInputStream;
+		IMessageHeader messageHeader = new MessageHeader();
 		try {
 			inputStream = socket.getInputStream();
-			outputStream = socket.getOutputStream();
+			objectInputStream = new ObjectInputStream(inputStream);
+			messageHeader.readExternal(objectInputStream);
 		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			return;
 		}
 		
-		DataInputStream dataInputStream = new DataInputStream(inputStream);
-		DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-		
-		int length;
+		int messageLength = messageHeader.getMessageLength();
+		byte[] request = new byte[messageLength];
 		try {
-			length = dataInputStream.readInt();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-		byte[] request = new byte[length];
-		try {
-			dataInputStream.readFully(request);
+			objectInputStream.readFully(request);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
@@ -58,10 +55,23 @@ public class ServerRequestHandler implements IServerRequestHandler {
 		
 		byte[] response = invoke(request);
 		
+		if (messageHeader.getInvocationStyle() == InvocationStyle.FIRE_FORGET) {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
+			return;
+		}
+		
+		messageHeader.setMessageLength(response.length);
 		try {
-			dataOutputStream.writeInt(response.length);
-			dataOutputStream.write(response);
-			dataOutputStream.flush();
+			OutputStream outputStream = socket.getOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+			messageHeader.writeExternal(objectOutputStream);
+			objectOutputStream.write(response);
+			objectOutputStream.flush();
 			socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();

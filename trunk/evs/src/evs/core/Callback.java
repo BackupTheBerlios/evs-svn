@@ -1,10 +1,10 @@
-//package evs.core;
-//
-//import evs.exception.RemotingException;
-//import evs.interfaces.ICallback;
-//
-//public class Callback implements ICallback {
-//
+package evs.core;
+
+import evs.interfaces.IACT;
+import evs.interfaces.ICallback;
+
+public class Callback implements ICallback {
+
 //	private boolean finished;
 //	private Object result;
 //	private RemotingException error;
@@ -33,4 +33,8 @@
 //		this.error = exception;
 //		this.finished = true;
 //	}
-//}
+
+	public void resultReturned(IACT act, Object result) {
+	}
+	
+}
