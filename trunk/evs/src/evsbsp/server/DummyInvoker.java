@@ -9,6 +9,7 @@ import evs.core.Common;
 import evs.exception.IllegalMethodException;
 import evs.exception.IllegalObjectException;
 import evs.exception.RemotingException;
+import evs.interfaces.IACT;
 import evs.interfaces.IInterceptor;
 import evs.interfaces.IInvocationObject;
 
@@ -44,10 +45,10 @@ public class DummyInvoker extends AInvoker{
 
 		switch(index.intValue()){
 			case 0:
-				localObject.testCall((Integer) object.getArguments().get(0));
+				localObject.testCall((Integer) object.getArguments().get(0), (IACT) object.getArguments().get(1));
 				break;
 			case 1:
-				Object returnValue = localObject.getCounter();
+				Object returnValue = localObject.getCounter((IACT) object.getArguments().get(1));
 				object.setReturnParam(returnValue);
 				break;
 			case 2:
