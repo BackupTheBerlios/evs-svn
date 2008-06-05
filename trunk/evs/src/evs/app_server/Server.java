@@ -3,9 +3,9 @@ package evs.app_server;
 import java.util.ArrayList;
 import java.util.List;
 
-import evs.entities.Customer;
-import evs.entities.Order;
-import evs.entities.Product;
+import evsbsp.entities.Customer;
+import evsbsp.entities.Order;
+import evsbsp.entities.Product;
 
 /**
  *

@@ -4,6 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import dummy.exception.DummyException;
+
 import evs.exception.MarshallingException;
 import evs.exception.RemotingException;
 import evs.interfaces.IACT;
@@ -16,7 +18,6 @@ import evs.interfaces.IMarshaller;
 import evs.interfaces.IPollObject;
 import evs.interfaces.IPollObjectRequestor;
 import evs.interfaces.IRequestor;
-import evsbsp.exception.DummyException;
 
 public class Requestor implements IRequestor {
 	

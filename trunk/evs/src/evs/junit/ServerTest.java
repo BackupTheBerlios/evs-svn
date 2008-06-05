@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import evs.app_server.IServer;
 import evs.app_server.Server;
-import evs.entities.Customer;
-import evs.entities.Product;
+import evsbsp.entities.Customer;
+import evsbsp.entities.Product;
 
 public class ServerTest {
     

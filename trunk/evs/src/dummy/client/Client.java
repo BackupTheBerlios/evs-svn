@@ -1,5 +1,8 @@
-package evsbsp.client;
+package dummy.client;
 
+import dummy.server.Dummy;
+import dummy.server.DummyInvoker;
+import dummy_old.client.DummyProxy;
 import evs.core.ACT;
 import evs.core.Common;
 import evs.core.InvocationStyle;
@@ -9,9 +12,6 @@ import evs.interfaces.IACT;
 import evs.interfaces.ICallback;
 import evs.interfaces.IObjectReference;
 import evs.interfaces.IPollObject;
-import evsbsp.server.Dummy;
-import evsbsp.server.DummyInvoker;
-import evsbsp_old.client.DummyProxy;
 
 
 public class Client implements ICallback{

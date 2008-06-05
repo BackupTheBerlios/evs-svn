@@ -2,9 +2,9 @@ package evs.app_client;
 
 import evs.app_server.IServer;
 import evs.app_server.Server;
-import evs.entities.Customer;
-import evs.entities.Order;
-import evs.entities.Product;
+import evsbsp.entities.Customer;
+import evsbsp.entities.Order;
+import evsbsp.entities.Product;
 
 /**
  *
