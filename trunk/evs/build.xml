@@ -43,11 +43,12 @@
     
     <target name="all" depends="dist"/>
     
-    <target name="test">
+    <target name="test" depends="compile">
         <junit>
             <classpath refid="classpath" />
             <formatter type="brief" usefile="false" />
-            <test name="evs.junit.ServerTest" />
+            <test name="evsbsp.junit.ServerTest" />
+            <test name="evsbsp.junit.ClientTest" />
         </junit>
     </target>
     
