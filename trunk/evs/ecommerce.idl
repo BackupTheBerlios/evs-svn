@@ -1,0 +1,10 @@
+PACKAGE evsbsp
+CLASS Ecommerce[
+void buyOrder(evsbsp.entities.Order order)
+void createCustomer(evsbsp.entities.Customer customer)
+void createProduct (evsbsp.entities.Product product)
+List<evsbsp.entities.Product> listProducts()
+evsbsp.entities.Customer login(String userName, String password)
+void updateCustomer(evsbsp.entities.Customer customer)
+void updateProduct (evsbsp.entities.Product product)
+]
