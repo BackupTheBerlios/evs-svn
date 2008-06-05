@@ -1,4 +1,4 @@
-PACKAGE evs.example.test
+PACKAGE evsbsp
 CLASS Dummy[
 Integer counter
 void testCall(Integer a) THROWS DummyException

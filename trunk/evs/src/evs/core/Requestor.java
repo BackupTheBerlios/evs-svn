@@ -39,10 +39,12 @@ public class Requestor implements IRequestor {
 		
 		InetSocketAddress socketAddress = getInetSocketAddress(objectReference);
 
+		Object returnObject = null;
 		switch(style)
 		{
 			case SYNC:
-				return Common.getMarshaller().deserialize(Common.getClientRequesthandler().send(socketAddress, marshalledRequest));
+				returnObject = Common.getMarshaller().deserialize(Common.getClientRequesthandler().send(socketAddress, marshalledRequest));
+				break;
 			case POLL_OBJECT:
 				if(act != null)
 					throw new DummyException("No ACT is needed with InvocationStyle POLL_OBJECT");
@@ -51,10 +53,11 @@ public class Requestor implements IRequestor {
 				IMarshaller marshaller = Common.getMarshaller();
 				IPollObjectRequestor pollObjectRequestor = new PollObjectRequestor(object, marshaller, pollObject);
 				pollObjectRequestor.start();
-				return pollObject;
+				returnObject = pollObject;
+				break;
 			case FIRE_FORGET:
 				Common.getClientRequesthandler().send_fireforget(socketAddress, marshalledRequest);
-				return null;
+				break;
 			case RESULT_CALLBACK:
 			default:
 				if(act == null)
@@ -62,8 +65,15 @@ public class Requestor implements IRequestor {
 
 				clientCallbacks.put(act, callback);				
 				Common.getClientRequesthandler().send_callback(socketAddress, marshalledRequest, this);
-				return null;
 		}
+		
+		//handle interceptors
+		for(IInterceptor interceptor: Common.getClientInterceptors().getInterceptors()){
+			interceptor.afterInvocation(object);
+		}
+		
+		return returnObject;
+		
 	}
 	
 	public synchronized void returnResult(IACT act, byte[] result) {
