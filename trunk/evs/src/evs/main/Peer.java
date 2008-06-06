@@ -174,7 +174,7 @@ public class Peer implements Runnable {
 		}
 	}
 	
-	private void processCommand(String command) {
+	public void processCommand(String command) {
 		int x = command.indexOf('=');
 		if (x == -1) { // keyword only
 			if (command.equals("help")) {
