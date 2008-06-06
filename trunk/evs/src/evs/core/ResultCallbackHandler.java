@@ -28,10 +28,10 @@ public class ResultCallbackHandler implements IResultCallbackHandler {
 		this.request = request;
 		this.requestor = requestor;
 		this.act = act;
+		clientRequestHandler = Common.getClientRequesthandler();
 	}
 
 	public void run() {
-		clientRequestHandler = Common.getClientRequesthandler();
 		byte[] response;
 		try {
 			response = clientRequestHandler.send(socketAddress,request);
@@ -40,6 +40,10 @@ public class ResultCallbackHandler implements IResultCallbackHandler {
 			return;
 		}
 		requestor.returnResult(act, response);
+	}
+
+	public void setClientRequestHandler(IClientRequestHandler clientRequestHandler) {
+		this.clientRequestHandler = clientRequestHandler;
 	}
 
 	public Thread start() {

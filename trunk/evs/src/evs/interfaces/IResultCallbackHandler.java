@@ -9,6 +9,7 @@ package evs.interfaces;
  */
 public interface IResultCallbackHandler extends Runnable {
 
+	void setClientRequestHandler(IClientRequestHandler clientRequestHandler);
 	Thread start();
 
 }

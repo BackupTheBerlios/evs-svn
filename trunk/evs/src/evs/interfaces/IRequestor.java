@@ -28,4 +28,6 @@ public interface IRequestor {
 	 */
 	public void returnResult(IACT act, byte[] result);
 	
+	public void setClientRequestHandler(IClientRequestHandler clientRequestHandler);
+	
 }

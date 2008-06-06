@@ -24,6 +24,8 @@ import evs.interfaces.IResultCallbackHandler;
 
 public class Requestor implements IRequestor {
 	
+	private IClientRequestHandler clientRequestHandler = Common.getClientRequesthandler();
+	
 	private Map<IACT, ICallback> clientCallbacks = new HashMap<IACT, ICallback>();
 	
 	// Callback
@@ -43,7 +45,6 @@ public class Requestor implements IRequestor {
 			return Common.getInvocationDispatcher().invoke(marshalledRequest);
 		
 		InetSocketAddress socketAddress = getInetSocketAddress(objectReference);
-		IClientRequestHandler clientRequestHandler = Common.getClientRequesthandler();
 
 		Object returnObject = null;
 		switch(style) {
@@ -56,6 +57,7 @@ public class Requestor implements IRequestor {
 				IPollObject pollObject = new PollObject();
 				IPollObjectRequestor pollObjectRequestor =
 					new PollObjectRequestor(object, marshaller, pollObject);
+				pollObjectRequestor.setClientRequestHandler(clientRequestHandler);
 				pollObjectRequestor.start();
 				returnObject = pollObject;
 				break;
@@ -97,6 +99,10 @@ public class Requestor implements IRequestor {
         }
     }
 	
+	public void setClientRequestHandler(IClientRequestHandler clientRequestHandler) {
+		this.clientRequestHandler = clientRequestHandler;
+	}
+	
 	private InetSocketAddress getInetSocketAddress(IAOR aor) {
 		ILocation location = aor.getLocation();
 		String hostName = location.getHostname();
@@ -105,5 +111,5 @@ public class Requestor implements IRequestor {
 		InetSocketAddress socketAddress = new InetSocketAddress(hostName,port);
 		return socketAddress;
 	}
-	
+
 }

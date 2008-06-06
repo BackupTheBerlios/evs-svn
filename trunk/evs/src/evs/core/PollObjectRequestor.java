@@ -27,6 +27,7 @@ public class PollObjectRequestor implements IPollObjectRequestor {
 		this.invocationObject = invocationObject;
 		this.marshaller = marshaller;
 		this.pollObject = pollObject;
+		clientRequestHandler = Common.getClientRequesthandler();
 	}
 
 	public void run() {
@@ -38,7 +39,6 @@ public class PollObjectRequestor implements IPollObjectRequestor {
 			return;
 		}
 
-		clientRequestHandler = Common.getClientRequesthandler();
 		IAOR aor = invocationObject.getObjectReference();
 		
 		byte[] response;
@@ -77,6 +77,10 @@ public class PollObjectRequestor implements IPollObjectRequestor {
 		pollObject.setResult(result);
 	}
 	
+	public void setClientRequestHandler(IClientRequestHandler clientRequestHandler) {
+		this.clientRequestHandler = clientRequestHandler;
+	}
+
 	public Thread start() {
 		Thread t = new Thread(this,this.getClass().getName());
 		t.start();

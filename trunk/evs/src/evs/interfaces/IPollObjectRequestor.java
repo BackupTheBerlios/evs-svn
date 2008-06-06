@@ -9,6 +9,7 @@ package evs.interfaces;
  */
 public interface IPollObjectRequestor extends Runnable {
 	
+	void setClientRequestHandler(IClientRequestHandler clientRequestHandler);
 	Thread start();
 	void stop();
 
