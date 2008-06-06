@@ -1,6 +1,10 @@
 package evsbsp.client;
 
+<<<<<<< .mine
+import evs.core.ACT;
+=======
 import evs.core.InvocationObject;
+>>>>>>> .r74
 import evs.exception.NotSupportedException;
 import evs.interfaces.IACT;
 import evs.interfaces.ICallback;

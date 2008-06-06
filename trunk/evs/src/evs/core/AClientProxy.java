@@ -44,6 +44,7 @@ public abstract class AClientProxy implements IClientProxy{
 	
 	public void newInstance(IACT act) throws NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
+    arguments.add(act);
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "newInstance", arguments, "String");
 			String objectId = (String) requestor.invoke(object, false, callback, act, InvocationStyle.SYNC);
