@@ -9,16 +9,25 @@
     <property name="lib.dir" value="lib"/>
     <property name="javadoc.dir" value="${doc.dir}/api"/>
     <property name="dist.dir" value="dist"/>
+    <property name="wsdl.dir" value="wsdl"/>
     <property name="bin.file" value="${dist.dir}/${ant.project.name}-${version}.jar"/>
     <property name="javadoc.file" value="${dist.dir}/${ant.project.name}-${version}-doc.zip"/>
+	
+	<condition property="script.ext" value=".sh">
+		<os family="unix"/>
+	</condition>
     
+	<condition property="script.ext" value=".bat">
+		<os family="windows"/>
+	</condition>
+	
     <path id="classpath">
         <fileset dir="${lib.dir}">
-            <include name="*.jar"/>
+            <include name="**/*.jar"/>
         </fileset>
         <pathelement location="${bin.dir}"/>
     </path>
-    
+	
     <target name="compile" description="compile source files">
         <mkdir dir="${bin.dir}"/>
         <javac  srcdir="${src.dir}" 
@@ -26,6 +35,18 @@
                 compiler="javac1.5" 
                 classpathref="classpath"/>
     </target>
+    
+	<target name="java2wsdl" depends="compile">
+        <mkdir dir="${wsdl.dir}"/>
+		<exec executable="${axis.home}/bin/Java2WSDL${script.ext}">
+			<arg value="-o"/>
+			<arg value="${wsdl.dir}"/>
+			<arg value="-cp"/>
+			<arg value="${bin.dir}"/>
+			<arg value="-cn"/>
+			<arg value="evs.axis.InvokerService"/>
+		</exec>
+	</target>
     
     <target name="latex">
         <exec executable="make" dir="${doc.dir}/artifacts"/>
@@ -59,5 +80,6 @@
         <delete dir="${bin.dir}"/>
         <delete dir="${javadoc.dir}"/>
         <delete dir="${dist.dir}"/>
+        <delete dir="${wsdl.dir}"/>
     </target>
 </project>
