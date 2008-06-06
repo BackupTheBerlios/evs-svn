@@ -5,5 +5,5 @@
 		<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-out" class="org.apache.axis2.rpc.receivers.RPCMessageReceiver"/>
 	</messageReceivers>
 	<schema schemaNamespace="http://axis.evs/xsd"/>
-	<parameter name="ServiceClass">evs.axis.InvokerService</parameter>
+	<parameter name="ServiceClass">evs.axis.services.InvokerService</parameter>
 </service>

@@ -21,8 +21,6 @@ import evs.interfaces.IMessageHeader;
  */
 public class ClientRequestHandler implements IClientRequestHandler {
 	
-	public ClientRequestHandler() {}
-
 	public byte[] send(SocketAddress address, byte[] request) throws RemotingException {
 		Socket socket = sendRequest(address,request);
 		return receiveResponse(socket);

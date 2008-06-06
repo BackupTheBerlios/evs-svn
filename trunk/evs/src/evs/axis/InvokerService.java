@@ -1,7 +1,7 @@
 /**
  * 
  */
-package evs.axis.services;
+package evs.axis;
 
 /**
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
@@ -9,8 +9,11 @@ package evs.axis.services;
  */
 public class InvokerService {
 	
-	public String invoke() {
-		return "result";
+	public byte[] invoke(byte[] request) {
+		return request;
+	}
+
+	public void fireAndForget(byte[] request) {
 	}
 
 }
