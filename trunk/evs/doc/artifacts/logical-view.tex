@@ -4,8 +4,7 @@
 
 \subsection{Common}
 \subsubsection{Marshaller}
-
-The marshaller translates objects into sequences of bytes and vice versa.
+The marshaller translates objects into sequences of bytes and vice versa. Every object that is passed to the marshaller must at least implement the \texttt{Serializable} interface provided by Java. Otherwise it is not guaranteed that the passed object can be transformed into a byte array. If neither the \texttt{Serializable}- nor the \texttt{Externilizable}-interface are implemented, a seperate marshaller is needed, that possesses the ability to transform the data of the object into a byte array, despite the lack of the interfaces. The marshaller is implemented as a Singleton, because a peer owns a client and a server interface at the same time and on both sides it is necessary to either marshall or unmarshall a message. Both sides use the same marshaller that offers various functions.
 
 \subsubsection{Interface Description}
 The interface description is the source for generating the interface for client proxies and remote objects. For the purpose of defining such an interface description the syntax for a simple IDL (Interface Description Language) was created and a corresponding parser was developed. This syntax allows the definition of classes and exceptions in the following form:
@@ -35,6 +34,10 @@ The IDL-Parser \texttt{evs.idl.SimpleIDLParser} analyses the file and generates 
 \end{itemize}
 
 \subsubsection{Absolute Object Reference}
+When a peer wants to invoke a remote object, it first needs to know where the remote object is located, hence which server request handler it has to direct the request to. The server request handler is identified by a hostname and a port, where it listen for incoming requests. The next important information the peer needs to know is the ID of the remote object that it wants to invoke, and the ID of the invoker that's behind the prior mentioned server request handler. The pattern \textit{Absolute Object Reference} uniquely identifies the invoker and the remote object. It contains the hostname and the port of the server request handler, the ID of ther invoker and the ID of the remote object. If a peer has the AOR of a remote object it has all the information it needs to invoke it. 
+
+\subsubsection{ACT}
+An ACT is an asynchronous completion token. Client can start several asynchronous requests at the same time. To give the client the ability to connect an incoming response to a request he sent, an ACT is used. It is passed to the client proxy as a parameter in the invocation which passes the act further down to the requestor. In the requestor the ACT is serialized into the request sent. When the requestor receives a response it knows what ACT the answer belongs to and passes it back to the client so the client also knows what request the response belongs to. 
 
 \subsubsection{Connection}
 
@@ -44,10 +47,10 @@ TCP/IP end points are uniquely identified by their IP address and port number.
 \subsection{Server}
 
 \subsubsection{Remote Object}
+A remote object can be accessed by peers using the Absolute Object Reference of it. It normally provides some sort of functionality, that the peers want to utilize. For each remote object a corresponding invoker and a client proxy is generated from the interface of the remote object. The client is then presented the same interface that the remote object has by the its proxy.
 
 \subsubsection{Invoker}
-
-The invoker calls the marshaller to translate request messages to invocations.
+For each remote object a corresponding invoker is generated, as mentioned prior. The invoker gets its data for the actual invocation from the invocation dispatcher, which unmarshalles the received request and extracts the needed information.
 
 \subsubsection{Server Request Handler}
 
@@ -63,8 +66,22 @@ The server request handler sends response messages to the client request handler
 \subsubsection{Client Request Handler}
 
 \subsubsection{Requestor}
+The requestor receives the following data from the client proxy: an \texttt{InvocationObjec}, a boolean telling if the called function is \texttt{void} or not, an \texttt{ICallback} for the callback functionality for the \texttt{InvocationStyle.RESULT_CALLBACK}, an \texttt{IACT} (an asynchronous completion token} and the \texttt{InvocationStyle} that is used for this invocation. At first the requestor calls every registered interceptor before the invocation. Next he marshalls the \texttt{InvocationObject} to a byte array, so it is prepared for transmission to the server request handler. Then the AOR (Absolute Object Reference) is extracted from the \texttt{InvocationObject}, so that the requstor can tell the request handler explicitly to which location the request has to be sent. In the next step the requestor distinguishes between the different \texttt{InvocationStyle}s:
+\begin{itemize}
+	\item \texttt{InvocationStyle.SYNC}
+	In the case of \texttt{SYNC} the request handler is called, and the requestor waits for its answer. The received result is unmarshalled and then returned to the client proxy. 	
+	\item \texttt{InvocationStyle.POLL_OBJECT}
+	When using a \texttt{POLL_OBJECT} the requestor creates a new \textt{PollObjectRequestor}, which takes responsibility for the further handling of the request. The newly created object starts in a new thread, marshalls the \texttt{InvocationObject}, creates a new \texttt{PollObject}, sends the request to the request handler and waits for a response. The created \texttt{PollObject} is returned to the client proxy, which returns it to the client. Now the client can poll this object, if the result of the invocation has arrived yet. When the result arrives, the requestor gets the marshalled response from the request handler, unmarshalls it, saves the response in the \texttt{PollObject} and sets a boolean to true, to reveal that the response has arrived.
+	\item \texttt{InvocationStyle.FIRE_FORGET}
+	The style \texttt{FIRE_FORGET} is quite simple. The request is passed to the request handler, which sends the request to the passed location. The request handler does not wait for an answer, neither do the requestor, the client proxy or the client.
+	\item \texttt{InvocationStyle.RESULT_CALLBACK}
+	The \texttt{RESULT_CALLBACK} style implies, that after the request is sent, noone waits for a response. When the response arrives, the request handler calls a callback function to notify the requestor about it. To make that work, the requestor has a \texttt{Map<IACT, ICallback>} to keep track of the request and response messages. Each call is saved as a new entry in the map. The requestor creates a new \texttt{ResultCallbackHandler} object, which runs in its own thread. The request is ordinarily sent via the request handler. When the \texttt{ResultCallbackHandler} gets the response from the request handler, it calls a function in the requestor and passes the result as a byte array and the \texttt{ACT} (asynchronous completion token). The requestor unmarshalls the response, fetches the corresponding \texttt{ICallback} to the passed \texttt{ACT} and calls the \texttt{resultReturned} function of the \texttt{ICallback} with the response as parameter.
+\end{itemize}
+
 
 \subsubsection{Client Proxy}
+The client proxy implements the same interface as the remote object, so the client calls the client proxy as he would call the remote object directly. The proxy is generated for each remote object automatically. The client proxy handles the different \texttt{InvocationStyle}s. Independent of the chosen \texttt{InvocationStyle} the client proxy forwards the invocation to the requestor. It creates a new \texttt{InvocationObject} from the invocation of the client which is passed to the requestor. Furthermore a boolean, if the method called has a return value or not, an \texttt{ICallback}, where the callback for the \texttt{InvocationStyle.RESULT_CALLBACK} is set or not, an ACT (asynchronous completion token, it is described later on) and the \texttt{InvocationStyle}, that was set prior to the invocation, are passed. The requestor then has all the information it needs for further processing.
+
 
 \subsection{Protocols}
 

@@ -56,6 +56,8 @@ public class EcommerceInvoker extends AInvoker{
 				object.setReturnParam(returnValue);
 				break;
 			case 4:
+				if(localObject == null)
+					System.out.println("LOL");
 				returnValue = localObject.login((String) object.getArguments().get(0), (String) object.getArguments().get(1), (IACT) object.getArguments().get(2));
 				object.setReturnParam(returnValue);
 				break;
