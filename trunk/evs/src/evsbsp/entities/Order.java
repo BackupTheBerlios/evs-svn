@@ -4,15 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Florian Lukavsky
- *         0325558
- */
 public class Order implements Serializable {
 
     private static final long serialVersionUID = -306021298577299922L;
-	private Customer customer;
+    private Customer customer;
     private List<Product> products;
     
     public Order () {

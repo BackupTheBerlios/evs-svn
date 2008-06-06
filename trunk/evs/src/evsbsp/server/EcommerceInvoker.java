@@ -36,7 +36,7 @@ public class EcommerceInvoker extends AInvoker{
 		Integer index = (Integer) operations.get(object.getOperationName());
 		if(index == null) throw new IllegalMethodException("Method " + object.getOperationName() + " not supported");
 
-		if(index < 2){
+		if(index < 7){
 			localObject = (Ecommerce) Common.getObjectManager().invocationArrived(object.getObjectReference().getReference());
 			if(localObject == null) throw new IllegalObjectException("Object " + object.getObjectReference().getReference().getClientDependent() + " not available");
 		}
@@ -77,8 +77,7 @@ public class EcommerceInvoker extends AInvoker{
 				return object;
 			default:
 				throw new IllegalMethodException("Method " +  object.getOperationName() + " not supported");
-		}
-		
+                }
 		Common.getObjectManager().invocationDone(object.getObjectReference().getReference(), localObject);
 
 		for(IInterceptor interceptor: Common.getServerInterceptors().getInterceptors()){

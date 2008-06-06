@@ -17,7 +17,7 @@ public class EcommerceProxy extends AClientProxy implements IEcommerceOperations
 	private static final String PORT = "31337";
 
 	public EcommerceProxy(ICallback callback){
-		super(callback);
+                setRequestType(InvocationStyle.SYNC);
 		this.aor = new AOR(new WebLocation(HOSTNAME, PORT), new ObjectReference(OBJECT_ID, INVOKER_ID));
 	}
 
