@@ -12,8 +12,12 @@ import evs.interfaces.ILocation;
 import evs.interfaces.IObjectReference;
 
 /**
+ * AOR - absolute object reference
+ * contains hostname, port, invoker ID and remote object ID
+ * used to uniquely identify remote object
+ * 
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
- *
+ * @author Dirk Wallerstorfer
  */
 public class AOR implements IAOR {
 	
@@ -61,11 +65,22 @@ public class AOR implements IAOR {
 		return false;
 	}
 	
+	/**
+	 * implementation of Externalizable interface
+	 * @param out ObjectOutput to be written to
+	 * @throws IOException when ObjectOutput is corrupt
+	 */
 	public synchronized void writeExternal(ObjectOutput out) throws IOException {
 		out.writeObject(this.location);
 		out.writeObject(this.reference);
 	}
 	
+	/**
+	 * implementation of Externalizable interface
+	 * @param in ObjectInput to be read from
+	 * @throws IOException when ObjectInput is corrupt
+	 * @throws ClassNotFoundException when the class cannot be found
+	 */
 	public synchronized void readExternal(ObjectInput in) throws ClassNotFoundException, IOException {
 		this.location = (ILocation) in.readObject();
 		this.reference= (IObjectReference) in.readObject();

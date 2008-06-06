@@ -11,6 +11,13 @@ import evs.interfaces.IClientProxy;
 import evs.interfaces.IInvocationObject;
 import evs.interfaces.IRequestor;
 
+/**
+ * AClientProxy
+ * abstract implementation of a client proxy
+ * 
+ * @author Dirk Wallerstorfer
+ * 
+ */
 public abstract class AClientProxy implements IClientProxy{
 
 	protected IRequestor requestor;
@@ -18,33 +25,57 @@ public abstract class AClientProxy implements IClientProxy{
 	protected InvocationStyle requestType;
 	protected ICallback callback;
 	
+	/**
+	 * emtpy constructor
+	 */
 	public AClientProxy(){
 		this.requestor = new Requestor();
 		requestType = InvocationStyle.FIRE_FORGET;
 	}
 	
+	/**
+	 * constructor with ICallback
+	 * @param callback the callback to be used when InvocationStyle is RESULT_CALLBACK
+	 */
 	public AClientProxy(ICallback callback){
 		this.requestor = new Requestor();
 		this.callback = callback;
 		requestType = InvocationStyle.RESULT_CALLBACK;
 	}
 
+	/**
+	 * constructor with InvocationStyle and ICallback
+	 * @param requestType InvocationStyle to be used for communication
+	 * @param callback the callback to be used when InvocationStyle is RESULT_CALLBACK
+	 */
 	public AClientProxy(InvocationStyle requestType, ICallback callback){
 		this.requestor = new Requestor();
 		this.requestType = requestType;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see evs.interfaces.IClientProxy#getAOR()
+	 */
 	public IAOR getAOR() {
 		return aor;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see evs.interfaces.IClientProxy#setAOR(evs.interfaces.IAOR)
+	 */
 	public void setAOR(IAOR aor) {
 		this.aor = aor;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see evs.interfaces.IClientProxy#newInstance(evs.interfaces.IACT)
+	 */
 	public void newInstance(IACT act) throws NotSupportedException{
 		ArrayList<Object> arguments = new ArrayList<Object>();
-    arguments.add(act);
+		arguments.add(act);
 		try{
 			IInvocationObject object = new InvocationObject(getAOR(), "newInstance", arguments, "String");
 			String objectId = (String) requestor.invoke(object, false, callback, act, InvocationStyle.SYNC);
@@ -56,6 +87,10 @@ public abstract class AClientProxy implements IClientProxy{
 		}
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see evs.interfaces.IClientProxy#keepAlive()
+	 */
 	public void keepAlive() throws NotSupportedException {
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		try{
@@ -68,6 +103,10 @@ public abstract class AClientProxy implements IClientProxy{
 		}
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see evs.interfaces.IClientProxy#destroy()
+	 */
 	public void destroy() throws NotSupportedException {
 		ArrayList<Object> arguments = new ArrayList<Object>();
 		try{
@@ -80,18 +119,34 @@ public abstract class AClientProxy implements IClientProxy{
 		}
 	}
 
+	/**
+	 * get the InvocationStyle
+	 * @return the user InvocationStyle
+	 */
 	public InvocationStyle getRequestType() {
 		return requestType;
 	}
 
+	/**
+	 * set the InvocationStyle
+	 * @param requestType InvocationStyle to be used
+	 */
 	public void setRequestType(InvocationStyle requestType) {
 		this.requestType = requestType;
 	}
 
+	/**
+	 * get the ICallback set
+	 * @return returns ICallback set
+	 */
 	public ICallback getCallback() {
 		return callback;
 	}
 
+	/**
+	 * sets the ICallback
+	 * @param callback ICallback to be set
+	 */
 	public void setCallback(ICallback callback) {
 		this.callback = callback;
 	}

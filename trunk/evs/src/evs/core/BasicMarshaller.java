@@ -12,9 +12,20 @@ import evs.exception.MarshallingException;
 import evs.interfaces.IInvocationObject;
 import evs.interfaces.IMarshaller;
 
+/**
+ * BasicMarshaller
+ * provides marshalling and unmarshalling functions
+ * 
+ * @author Dirk Wallerstorfer
+ *
+ */
 
 public class BasicMarshaller implements IMarshaller{
 
+	/*
+	 * (non-Javadoc)
+	 * @see evs.interfaces.IMarshaller#serialize(evs.interfaces.IInvocationObject)
+	 */
 	public byte[] serialize(IInvocationObject object) throws MarshallingException{
 		try {
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -29,6 +40,10 @@ public class BasicMarshaller implements IMarshaller{
 		}
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see evs.interfaces.IMarshaller#deserialize(byte[])
+	 */
 	public IInvocationObject deserialize(byte[] bytes) throws MarshallingException{
 		try {
 			ByteArrayInputStream input = new ByteArrayInputStream(bytes);

@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 
 import evs.core.ACT;
-import evs.core.Callback;
 import evs.core.Common;
 import evs.core.ObjectReference;
 import evs.core.ServerConnectionHandler;
@@ -33,6 +32,7 @@ import evs.interfaces.IInvoker;
 import evs.interfaces.ILifecycleManager;
 import evs.interfaces.IObjectReference;
 import evs.interfaces.IServerConnectionHandler;
+import evs.unused.Callback;
 
 /**
  * @author Gerald Scharitzer (e0127228 at student dot tuwien dot ac dot at)
