@@ -12,6 +12,8 @@
     <property name="wsdl.dir" value="wsdl"/>
     <property name="bin.file" value="${dist.dir}/${ant.project.name}-${version}.jar"/>
     <property name="javadoc.file" value="${dist.dir}/${ant.project.name}-${version}-doc.zip"/>
+    <property name="aar.file" value="${ant.project.name}-${version}.aar"/>
+    <property name="deploy.dir" value="${axis.home}/repository/services"/>
 	
 	<condition property="script.ext" value=".sh">
 		<os family="unix"/>
@@ -47,22 +49,44 @@
 			<arg value="evs.axis.InvokerService"/>
 		</exec>
 	</target>
-    
+	
     <target name="latex">
         <exec executable="make" dir="${doc.dir}/artifacts"/>
     </target>
     
     <target name="javadoc" description="generate java documentation">
-        <javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}"/>
+        <javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}" packagenames="evs.*"/>
     </target>
     
-    <target name="dist" depends="compile,javadoc" description="pack distribution">
+    <target name="dist-javadoc" depends="compile,javadoc">
         <mkdir dir="${dist.dir}"/>
-        <jar basedir="${bin.dir}" destfile="${bin.file}"/>
         <zip basedir="${javadoc.dir}" destfile="${javadoc.file}"/>
     </target>
+
+	<target name="dist-jar" depends="compile">
+        <mkdir dir="${dist.dir}"/>
+        <jar basedir="${bin.dir}" destfile="${bin.file}"/>
+    </target>
+    
+	<target name="dist-aar" depends="compile">
+        <mkdir dir="${dist.dir}"/>
+		<jar destfile="${dist.dir}/${aar.file}">
+			<metainf dir="resources/META-INF"/>
+			<fileset dir="${bin.dir}" includes="evs/axis/**"/>
+		</jar>
+    </target>
+    
+	<target name="dist" depends="dist-jar,dist-aar,dist-javadoc"/>
     
     <target name="all" depends="dist"/>
+	
+	<target name="deploy-aar" depends="dist-aar">
+		<copy file="${dist.dir}/${aar.file}" todir="${deploy.dir}"/>
+	</target>
+    
+	<target name="undeploy-aar">
+		<delete file="${deploy.dir}/${aar.file}"/>
+	</target>
     
     <target name="test" depends="compile">
         <junit>
