@@ -20,6 +20,7 @@ import java.util.Set;
 import evs.core.ACT;
 import evs.core.Callback;
 import evs.core.Common;
+import evs.core.LifecycleStrategy;
 import evs.core.ObjectReference;
 import evs.core.ServerConnectionHandler;
 import evs.exception.IllegalObjectException;
@@ -390,7 +391,12 @@ public class Peer implements Runnable {
 		}
 	}
 	
-	private void registerObject(String className) {
+	private void registerObject(String classStrategy) {
+                String className = classStrategy.split(" ")[0];
+                String strategy = "STATIC";
+                if (classStrategy.split(" ").length > 1) {
+                        strategy = classStrategy.split(" ")[1];
+                }
 		IObjectReference ref = new ObjectReference(className,className + "Invoker");
 		Class<?> clazz;
 		try {
@@ -436,7 +442,7 @@ public class Peer implements Runnable {
 		invocationDispatcher.registerInvoker(ref.getInvokerId(),invoker);
 
 		try {
-			lifeCycleManager.register(ref);
+			lifeCycleManager.register(ref, LifecycleStrategy.valueOf (strategy));
 		} catch (IllegalObjectException e) {
 			e.printStackTrace();
 			return;
@@ -482,5 +488,5 @@ public class Peer implements Runnable {
 	private void listen() {
 		listener.start();
 	}
-	
+        
 }

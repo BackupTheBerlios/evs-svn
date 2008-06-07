@@ -29,15 +29,8 @@ public class InvocationTest {
 
     @Before
     public void setUp () {
-//        String[] args = {};
-//        if (peer == null) {
-//        peer = new Peer (args);
-//        peer.run ();
         peer = TestHelper.getPeer ();
-        peer.processCommand ("register-object=dummy.server.Dummy");
-//        peer.processCommand ("port=31337");
-//        peer.processCommand ("listen");
-//        }
+        peer.processCommand ("register-object=dummy.server.Dummy STATIC");
     }
 
     @After
