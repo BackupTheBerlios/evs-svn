@@ -42,26 +42,34 @@ An ACT is an asynchronous completion token. Clients can start several asynchrono
 TCP connections are uniquely identified by the pair of communication end points.
 TCP/IP end points are uniquely identified by their IP address and port number.
 
+\subsubsection{Peer}
+
+Peers can use one or more client and server request handlers to communicate with other peers.
+They can create remote objects and make them available to other peers to act as an object server.
+When acting as a client the peer creates client proxies and invokes their methods to access the remote objects.
+The peers can be started in separate threads or as main programs.
+In both cases the actions of the peer are controlled by its input and output streams, which provide a command shell to the user.
+
 \subsection{Server}
 
 \subsubsection{Remote Object}
 A remote object can be accessed by peers using its Absolute Object Reference. It usually provides some sort of functionality, that the peers want to utilize. For each remote object a corresponding invoker and a client proxy is generated according to the remote object's interface. The client is presented the same interface as the remote object's by its proxy.
 
 \subsubsection{Invoker}
-For each remote object a corresponding invoker is generated, as mentioned prior. The invoker gets its data for the actual invocation from the invocation dispatcher, which unmarshalls the received request and extracts the required information.
+For each remote object a corresponding invoker is generated, as mentioned previously. The invoker gets its data for the actual invocation from the invocation dispatcher, which unmarshalls the received request and extracts the required information.
 
 \subsubsection{Server Request Handler}
 
 The server request handler receives request messages and dispatches them to the invokers.
 The server request handler sends response messages to the client request handlers.
 
-\subsubsection{Server Protocol Plugin}
-
 \subsection{Client}
 
-\subsubsection{Client Protocol Plugin}
-
 \subsubsection{Client Request Handler}
+
+The client request handler sends marshalled requests to the corresponding server request handler without interpreting the request.
+Depending on the invocation style the client waits to receive a response from the server or not.
+If the a marshalled response is received, then it is returned to the requestor without interpreting it.
 
 \subsubsection{Requestor}
 The requestor receives the following data from the client proxy: an \texttt{InvocationObjec}, a boolean indicating, if the called function is \texttt{void}, an \texttt{ICallback} for the callback functionality of the \texttt{InvocationStyle.RESULT\_CALLBACK}, an \texttt{IACT} (an asynchronous completion token) and the \texttt{InvocationStyle} that is used for this invocation. At first the requestor calls every registered interceptor prior to invocation. Next it marshalls the \texttt{InvocationObject} to a byte array, in order to prepare it for transmission to the server request handler. Then the AOR (Absolute Object Reference) is extracted from the \texttt{InvocationObject}, so that the requstor can tell the request handler explicitly to which location the request has to be sent. In the next step the requestor distinguishes between the different \texttt{InvocationStyle}s:
@@ -78,42 +86,26 @@ The requestor receives the following data from the client proxy: an \texttt{Invo
 
 
 \subsubsection{Client Proxy}
-The client proxy implements the same interface as the remote object, so the client calls the client proxy as it would call the remote object directly. The proxy is generated automatically for each remote object. The client proxy handles the different \texttt{InvocationStyle}s. Independent of the chosen \texttt{InvocationStyle} the client proxy forwards the invocation to the requestor. It creates a new \texttt{InvocationObject} from the invocation of the client which is passed to the requestor. Furthermore a boolean, indicating wether the method called, has a return value or not, an \texttt{ICallback}, where the callback for the \texttt{InvocationStyle.RESULT\_CALLBACK} is set or not, an ACT (Asynchronous Completion Token) and the \texttt{InvocationStyle}, that was set prior to the invocation, are passed. The requestor now has all the information it needs for further processing.
 
+The client proxy implements the same interface as the remote object, so the client calls the client proxy as it would call the remote object directly. The proxy is generated automatically for each remote object. The client proxy handles the different \texttt{InvocationStyle}s. Independent of the chosen \texttt{InvocationStyle} the client proxy forwards the invocation to the requestor. It creates a new \texttt{InvocationObject} from the invocation of the client which is passed to the requestor. Furthermore a boolean, indicating wether the method called, has a return value or not, an \texttt{ICallback}, where the callback for the \texttt{InvocationStyle.RESULT\_CALLBACK} is set or not, an ACT (Asynchronous Completion Token) and the \texttt{InvocationStyle}, that was set prior to the invocation, are passed. The requestor now has all the information it needs for further processing.
 
 \subsection{Protocols}
 
 \subsubsection{Communication Protocols}
 
-\paragraph{Minimal Communication Protocol}
+The communication protocol is determined by the communication end points, which process only single protocols.
 
-The minimal communication protocol has no protocol header and therefore transmits byte streams without interpreting them.
-The marshalling protocol is determined by the communication end points, which process only single protocols.
+\paragraph{Basic Communication Protocol}
+
+The basic communication protocol uses message headers but transmits byte streams without interpreting them.
 The sender and receiver are determined by the communication end points.
 
-\paragraph{Typed Communication Protocol}
+\paragraph{Axis2 Java Web Service Protocol}
 
-The typed communication protocol prefixes the message body with a 4 byte header, which specifies the protocol of the message body.
-The sender and receiver are determined by the communication end points.
+The client request handler invokes operations of an invoker service which is provided by.
 
 \subsubsection{Marshalling Protocols}
-
-\paragraph{Binary Serialization Protocol}
-
-The invocation is analysed and serialized via reflection.
 
 \paragraph{Java Serialization Protocol}
 
 The invocation is serialized by the default Java object serialization.
-
-\paragraph{Axi2 Java Web Service Protocol}
-
-The marshaller translates invocations to SOAP messages and vice versa.
-
-\subsection{Configuration}
-
-\subsubsection{Properties}
-
-peer.local.host.name\\
-peer.local.ip.address\\
-peer.local.port\\
