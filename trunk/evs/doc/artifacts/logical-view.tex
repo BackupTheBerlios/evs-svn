@@ -1,12 +1,12 @@
 \section{Logical View}
 
-
 \subsection{Common}
 
 \subsubsection{Interface Description}
 The interface description is the source for generating the interfaces for client proxies and remote objects. For the purpose of defining such an interface description the syntax for a simple IDL (Interface Description Language) was created and a corresponding parser was developed. This syntax allows the definition of classes and exceptions in the following form:
 
 \begin{code}
+\begin{small}
 \begin{verbatim}
 PACKAGE bla.bla.blub
 CLASS Dummy[
@@ -19,7 +19,9 @@ EXCEPTION DummyException[
 Integer count
 ]
 \end{verbatim}
+\end{small}
 \end{code}
+
 
 The IDL-Parser \texttt{evs.idl.SimpleIDLParser} analyzes the file and generates Client and Server Stubs for the specified application. A Code-Generator for Java was implemented in \texttt{evs.idl.JavaCodeGenerator}, which generates the following files based on the interface definition:
 
@@ -36,13 +38,13 @@ For general marshalling purposes the class \texttt{evs.core.BasicMarshaller} is 
 
 \subsubsection{Absolute Object Reference}
 When a peer wants to invoke a remote object, it first needs to know where the remote object is located, hence which server request handler it has to direct the request to. The server request handler is identified by a hostname and a port, where it listens for incoming requests. The next important information the peer needs to know is the ID of the remote object that it wants to invoke, and the ID of the invoker that is behind the prior mentioned server request handler. The pattern \textit{Absolute Object Reference} uniquely identifies the invoker and the remote object. It contains the hostname and the port of the server request handler, the ID of the invoker and the ID of the remote object. If a peer has the AOR of a remote object it has all the information it needs to invoke it. \\
-The AOR is implemented in \texttt{evs.core.AOR} and contains the location of the remote object in the form of a \texttt{evs.interfaces.ILocation} (for which a \texttt{evs.core.WebLocation} implementation is provided) and the \textit{Object ID} implemented in the \texttt{evs.core.ObjectReference}.
+The AOR is implemented in \texttt{evs.core.AOR} and contains the location of the remote object in the form of a \texttt{evs.interfaces.ILocation} and the \textit{Object ID} implemented in the \texttt{evs.core.ObjectReference}.
 
 \subsubsection{ACT}
 An \texttt{evs.core.ACT} is an asynchronous completion token. Clients can start several asynchronous requests at the same time. To give the client the ability to connect an incoming response to a request it sent, an ACT is used. It is passed to the client proxy as a parameter during invocation which passes the ACT further down to the requestor. The requestor serializes the ACT into the request sent. When the requestor receives a response it knows which ACT the answer belongs to and passes it back to the client. The client can now match the incoming response to the request with the corresponding ACT. 
 
 \subsubsection{Invocation Object}
-The necessary information for invoking a remote object is bundled in the \texttt{evs.core.InvocationObject} which provides an implementation of the \texttt{Externilizable}-interface for easy marshalling. This information includes:
+The necessary information for invoking a remote object is bundled in the \texttt{evs.core. InvocationObject} which provides an implementation of the \texttt{Externilizable}-interface for easy marshalling. This information includes:
 \begin{itemize}\itemsep0pt
 \item Absolute Object Reference
 \item the name of the operation
@@ -53,15 +55,10 @@ The necessary information for invoking a remote object is bundled in the \texttt
 \end{itemize}
 
 \subsubsection{Remoting Errors}
-It is possible for Remote Objects to declare application-specific exceptions. These exceptions must inherit \texttt{evs.exception.RemotingException} and are transported back to the the client, where they are filtered and thrown as application-specific exceptions by the Client Proxy. All distribution-related exceptions are thrown as \texttt{evs.exception.NotSupportedException}. For internal differentiation of distribution-related exceptions by the middleware a range of \texttt{evs.exception.MiddlewareException}-subtypes was implemented in the \texttt{evs.exception}-package.
+It is possible for Remote Objects to declare application-specific exceptions. These exceptions must inherit \texttt{evs.exception.RemotingException} and are transported back to the the client, where they are filtered and thrown as application-specific exceptions by the Client Proxy. All distribution-related exceptions are thrown as \texttt{evs.exception.NotSupportedException}.\\For the internal differentiation of all sorts of distribution-related exceptions by the middleware a range of \texttt{MiddlewareExceptin}-subtypes was implemented in the \texttt{evs.exception}-package.
 
 \subsubsection{Interceptor Architecture}
-
-
-\subsubsection{Connection}
-
-TCP connections are uniquely identified by the pair of communication end points.
-TCP/IP end points are uniquely identified by their IP address and port number.
+Interceptors can be registered with the \texttt{evs.core.InterceptorRegistry} of a peer. Every interceptor must implement the methods \texttt{beforeInvocation} and \texttt{afterInvocation} of the \texttt{evs.interfaces.IInterceptor}. These methods are called before and after the invocation of an object in the requestor on the client-side and in the invoker on the server-side.
 
 \subsubsection{Peer}
 
@@ -77,34 +74,49 @@ In both cases the actions of the peer are controlled by its input and output str
 A remote object can be accessed by peers using its Absolute Object Reference. It usually provides some sort of functionality, that the peers want to utilize. For each remote object a corresponding invoker and a client proxy is generated according to the remote object's interface. The client is presented the same interface as the remote object's by its proxy.
 
 \begin{figure}[ht!]
-	\centering\includegraphics[width=5cm]{uml/Ecommerce.jpg} 
+	\centering\includegraphics[width=9cm]{uml/Ecommerce.jpg} 
 	\caption{Ecommerce Remote Object}
 	\label{fig:ecommerce}
 \end{figure}
 
-\subsubsection{Lifecycle Management}
-
-\begin{figure}[ht!]
-	\centering\includegraphics[width=5cm]{uml/LifeCycleManager.jpg} 
-	\caption{Lifecycle Manager}
-	\label{fig:lifecycle}
-\end{figure}
-
 
 \subsubsection{Invoker}
-For each remote object a corresponding invoker is generated, as mentioned previously. The invoker gets its data for the actual invocation from the invocation dispatcher, which unmarshalls the received request and extracts the required information.
+For each remote object a corresponding invoker is generated, as mentioned previously. The invoker gets its data for the actual invocation from the \texttt{evs.core. InvocationDispatcher}, which unmarshalls the received request and extracts the required information to choose the appropriate invoker. The reason why the invoker is not called directly by the request handler is, 
 
 \begin{figure}[ht!]
-	\centering\includegraphics[width=5cm]{uml/EcommerceInvoker.jpg} 
+	\centering\includegraphics[width=4cm]{uml/EcommerceInvoker.jpg} 
 	\caption{Ecommerce Invoker}
 	\label{fig:invoker}
 \end{figure}
 
 \begin{figure}[ht!]
-	\centering\includegraphics[width=5cm]{uml/InvocationDispatcher.jpg} 
+	\centering\includegraphics[width=4cm]{uml/InvocationDispatcher.jpg} 
 	\caption{Invocation Dispatcher}
 	\label{fig:dispatcher}
 \end{figure}
+
+\subsubsection{Lifecycle Management}
+For the activation of distributed objects a Lifecycle Manager was implemented in \texttt{evs.core.LifecycleManager}. The invoker does not call the object directly but rather receives an object instance from the Lifecycle Manager. 
+
+\begin{figure}[ht!]
+	\centering\includegraphics[width=4cm]{uml/LifeCycleManager.jpg} 
+	\caption{Lifecycle Manager}
+	\label{fig:lifecycle}
+\end{figure}
+
+A peer has to register his different types of offered remote objects with a specific strategy with the Lifecycle Manager. Possible strategies include:
+
+\begin{itemize} 
+\item \texttt{LifecycleStrategy.STATIC}: Static instance, which is activated at registering
+\item \texttt{LifecycleStrategy.STATIC\_PASSIVATION}: Static instance, which is passivated to the file system after a pre-configured lease time
+\item \texttt{LifecycleStrategy.PER\_REQUEST}: A new servant is instantiated for each for each invocation.
+\item \texttt{LifecycleStrategy.CLIENT}: Client-specific instance (with Leasing)
+\item \texttt{LifecycleStrategy.CLIENT\_PASSIVATION}: Client-specific instance, which is passivated to the file system after a pre-configured lease time
+\item \texttt{LifecycleStrategy.LAZY}: Static instance, which is activated at request
+\item \texttt{LifecycleStrategy.POOLING}: Pool of client-independent instances
+\end{itemize}
+
+For the client-specific instances, functions for creating and destroying instances as well as renewing leases has to be provided to the client. All remote objects therefore inherit the abstract \texttt{evs.core.ARemoteObject} while all client proxies inherit the abstract \texttt{evs.core.AClientProxy} which add lifecycle-specific information to the application-specific objects and proxies.
 
 
 \subsubsection{Server Request Handler}
@@ -113,10 +125,11 @@ The server request handler receives request messages and dispatches them to the 
 The server request handler sends response messages to the client request handlers.
 
 \begin{figure}[ht!]
-	\centering\includegraphics[width=5cm]{uml/ServerRequestHandler.jpg} 
+	\centering\includegraphics[width=4cm]{uml/ServerRequestHandler.jpg} 
 	\caption{Server Request Handler}
 	\label{fig:serverrequesthandler}
 \end{figure}
+
 
 \subsection{Client-Side}
 
@@ -127,7 +140,7 @@ Depending on the invocation style the client waits to receive a response from th
 If the a marshalled response is received, then it is returned to the requestor without interpreting it.
 
 \begin{figure}[ht!]
-	\centering\includegraphics[width=5cm]{uml/ClientRequestHandler.jpg} 
+	\centering\includegraphics[width=4cm]{uml/ClientRequestHandler.jpg} 
 	\caption{Client Request Handler}
 	\label{fig:clientrequesthandler}
 \end{figure}
@@ -146,7 +159,7 @@ The requestor receives the following data from the client proxy: an \texttt{Invo
 \end{itemize}
 
 \begin{figure}[ht!]
-	\centering\includegraphics[width=5cm]{uml/Requestor.jpg} 
+	\centering\includegraphics[width=4cm]{uml/Requestor.jpg} 
 	\caption{Requestor}
 	\label{fig:requestor}
 \end{figure}
@@ -156,14 +169,14 @@ The requestor receives the following data from the client proxy: an \texttt{Invo
 The client proxy implements the same interface as the remote object, so the client calls the client proxy as it would call the remote object directly. The proxy is generated automatically for each remote object. The client proxy handles the different \texttt{InvocationStyle}s. Independent of the chosen \texttt{InvocationStyle} the client proxy forwards the invocation to the requestor. It creates a new \texttt{InvocationObject} from the invocation of the client which is passed to the requestor. Furthermore a boolean, indicating wether the method called, has a return value or not, an \texttt{ICallback}, where the callback for the \texttt{InvocationStyle.RESULT\_CALLBACK} is set or not, an ACT (Asynchronous Completion Token) and the \texttt{InvocationStyle}, that was set prior to the invocation, are passed. The requestor now has all the information it needs for further processing.
 
 \begin{figure}[ht!]
-	\centering\includegraphics[width=5cm]{uml/Client.jpg} 
+	\centering\includegraphics[width=3cm]{uml/Client.jpg} 
 	\caption{Ecommerce Client}
 	\label{fig:client}
 \end{figure}
 
 
 \begin{figure}[ht!]
-	\centering\includegraphics[width=5cm]{uml/EcommerceProxy.jpg} 
+	\centering\includegraphics[width=10cm]{uml/EcommerceProxy.jpg} 
 	\caption{Ecommerce Proxy}
 	\label{fig:clientproxy}
 \end{figure}

@@ -159,6 +159,33 @@ The server provides functionality to obtain all available products. The customer
 \subsubsection{Buy Order}
 After the customer has successfully logged in and decided which products to add to the order, he can call the servers buy order method, sending the generated order object and attached to it, the customer's object. The server adds the order to the customer whos ID corresponds to the ID received by the server, making it accessible in later sessions.
 
+
+
+\section{Configuration}
+The file \texttt{conf/evs.properties} contains configurable parameters of the middleware implementation. These include the location of the peer as well as lease time, pool size, passivation timeout and passivation directory for the lifecycle management.
+
+\clearpage
+
+\section{Conclusio}
+The developed middleware is based on the design and architecture as described in \cite{zdun2008}. Additionally the middleware uses most of the basic Remoting Patterns shown during the evs lecture in the summer term of 2008. To be more accurate, the so called \texttt{minimal solution} presenting the communication framework is implemented. As part of this framework we provide the following functionality:
+\begin{itemize}
+\item Each peer uses a RequestHandler, providing the functionality of the Client- and Server-RequestHandler.
+\item Remote invocations are abstracted using a Requestor and Invoker.
+\item A Client Proxy shares a common interface with the Remote Object and maps its methods to calls to the Requestor's invocation interface.
+\item The remote invocation data consists of 1) methods and parameter 2) an Object ID 3) an Absolut Object Reference.
+\item Flexible protocol implementation is provided using Protocol Plugins.
+\end{itemize}
+
+The enhanced capabilities of the middleware, as described in extension part 1, are provided with some shortcomings: We do not provide the federation approach using Configuration Groups. Except this the middleware implements the following client-side asynchronous invocations: Fire and Forget, Poll Object, Result Callback. The implementation of an interceptor architecture based on Extension Patterns and an architecture for activation of distributed objects, using Lifecycle Managemnet Patterns is supported by the middleware.
+
+The functionality of dynamic deployment of new services is provided by the implemented Peer. The Peer configuration and invocation is implemented using Java instead of Frag. To demonstrate the correct behavior of the presented middleware we provide the following provisions:
+\begin{itemize}
+\item The middleware is used to implement a distributed sales system for an eCommerce company.
+\item For this eCommerce company we provide corresponding JUnit tests.
+\item JUnit test for parts of the middleware are also provided.
+\end{itemize}
+
+
 \clearpage
 \appendix
 \section{Abbreviations and Acronyms}
