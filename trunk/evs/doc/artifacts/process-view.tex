@@ -13,10 +13,10 @@ Every message is prefixed by a message header, which contains the length of the 
 After the message header the message body is sent, which consists of the serialized request.
 If the invocation style is fire and forget, then the client closes the socket without waiting for a response from the server.
 Otherwise the client request handler waits to receive the message header of the response message.
-Finally the client request handler receives the serialized response and returns it to the requestor.
+Finally the client request handler receives the serialized response and returns it to the requestor.\\
 \\
-\\
-For each request the server request handler waits to receive the message header and the serialized request.
+For each request the server connection handler accepts a new connection and starts a service request handler in a separate thread.
+The server request handler waits to receive the message header and the serialized request.
 The request is then passed to the invocation dispatcher, which returns the serialized response.
 If the invocation style is fire and forget, then the server closes the socket without sending a response.
 Otherwise the server sends a message header, which contains the length of the serialized response.
@@ -24,15 +24,30 @@ Finally the server request handler sends the serialized response.
 
 \subsubsection{Axis}
 
+For each request the client request handler creates a web service invocation of the invoker service.
+If the invocation style is fire and forget, then the serialized request is sent to the operation "fireAndForget", which does not return a result.
+Otherwise the serialized request is sent to the operation "invoke" and the response is returned to the requestor.\\
+\\
+The server request handler is an instance of an Axis server and provides an invoker service.
+This invoker service provides the operations "invoke" and "fireAndForget", which receive the serialized requests.
+The invoke operation passes the request to the invocation dispatcher and returns the serialized response.
+The fireAndForget operation passes the request to the invocation dispatcher without returning a response. 
+
 \subsection{Message Patterns}
 
 The request handlers support two different message patterns.
 
 \subsubsection{Request Response}
 
-The client request handler sends a serialized request to the server request handler.
+The client request handler sends the serialized request to the server request handler and waits for the response.
+The server request handler receives the serialized request and passes it to the invocation dispatcher.
+The invocation dispatcher returns the serialized response and the server handler sends it to the client handler.
 
 \subsubsection{One Way}
+
+The client request handler sends the serialized request to the server request handler without waiting for a response.
+The server request handler receives the serialized request and passes it to the invocation dispatcher.
+The result of the invocation is not sent to the client.
 
 \subsection{Invocation Styles}
 
@@ -40,8 +55,17 @@ The requestors support one synchronous and three asynchronous invocation styles.
 
 \subsubsection{Synchronous}
 
+The requestor synchronously invokes the send method of the client request handler and waits for the result.
+
 \subsubsection{Poll Object}
 
+The requestor creates a new poll object and passes it to a poll object requestor.
+The poll object requestor is started in a separate thread and the requestor returns the poll object to the client proxy.
+In the poll object requestor thread the invocation is marshalled and the send method of the client request handler is invoked synchronously.
+The response from the client request handler is marshalled and stored in the poll object.
+
 \subsubsection{Result Callback}
+
+
 
 \subsubsection{Fire and Forget}
