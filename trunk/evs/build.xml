@@ -31,7 +31,7 @@
     </target>
     
     <target name="javadoc" description="generate java documentation">
-        <javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}" packagenames="evs.*"/>
+        <javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}" packagenames="evs.*" classpathref="classpath"/>
     </target>
     
     <target name="dist-javadoc" depends="compile,javadoc">
