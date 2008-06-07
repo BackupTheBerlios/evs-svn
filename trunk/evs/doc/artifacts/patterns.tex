@@ -34,7 +34,7 @@ The basic remoting patterns are implemented by the following classes:\\
 \textbf{Server Request Handler} & \texttt{evs.interfaces.IClientRequestHandler}, \texttt{evs.core.ClientRequestHandler}\\\hline
 \textbf{Object ID} & \texttt{evs.interfaces.IObjectReference}, \texttt{evs.core.ObjectReference}\\\hline
 \textbf{Absolute Object Reference} & \texttt{evs.interfaces.IAOR}, \texttt{evs.core.AOR}\\\hline
-\textbf{Protocol Plugin} & \\\hline
+\textbf{Protocol Plugin} & \texttt{evs.main.Peer}\\\hline
 \end{tabular}
 \end{small}
 
@@ -48,6 +48,9 @@ The patterns of Extension Part 1 are implemented by the following classes:\\
 \begin{tabular}{| p{4cm} | p{9cm} |}\hline
 \textbf{PATTERN} & \textbf{IMPLEMENTATION}\\\hline\hline
 \textbf{Asynchronous Invocation} & \texttt{evs.core.InvocationStyle} and \texttt{evs.core.Requestor}\\\hline
+\textbf{Poll Object} & \texttt{evs.core.PollObjectRequestor}\\\hline
+\textbf{Result Callback} & \texttt{evs.core.ResultCallBackHandler}\\\hline
+\textbf{Fire and Forget} & \texttt{evs.core.ClientRequestHandler}\\\hline
 \textbf{Interceptor Architecture} & \texttt{evs.core.InterceptorRegistry}, \texttt{evs.core.InvocationContext}, \texttt{evs.interfaces.IInterceptor}\\\hline
 \textbf{Lifecycle Management} & \texttt{evs.core.LifecycleManager}, \texttt{evs.core.LifecycleStrategy}\\\hline
 \textbf{Configuration Groups} & not implemented \\\hline

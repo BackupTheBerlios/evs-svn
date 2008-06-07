@@ -20,6 +20,10 @@ clean
 
 	delete build artifacts
 
-The peer is started from the project directory with the following command.
+The server peer is started from the project directory with the following command.
 
 	java -cp dist/evs-1.0.jar evs.main.Peer port=31337
+
+The client peer is started from the project directory with the following command.
+
+	java -cp dist/evs-1.0.jar evs.main.Peer port=31338
