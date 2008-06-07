@@ -1,0 +1,47 @@
+\section{Process View}
+
+The communication is based on Java sockets where each communication end point is identified by its IP address and TCP port number.
+
+\subsection{Request Handlers}
+
+The request handlers support two different communication protocols.
+
+\subsubsection{Socket}
+
+For each request the client request handler creates a new connection to the server request handler.
+Every message is prefixed by a message header, which contains the length of the serialized request and the invocation style.
+After the message header the message body is sent, which consists of the serialized request.
+If the invocation style is fire and forget, then the client closes the socket without waiting for a response from the server.
+Otherwise the client request handler waits to receive the message header of the response message.
+Finally the client request handler receives the serialized response and returns it to the requestor.
+\\
+\\
+For each request the server request handler waits to receive the message header and the serialized request.
+The request is then passed to the invocation dispatcher, which returns the serialized response.
+If the invocation style is fire and forget, then the server closes the socket without sending a response.
+Otherwise the server sends a message header, which contains the length of the serialized response.
+Finally the server request handler sends the serialized response.
+
+\subsubsection{Axis}
+
+\subsection{Message Patterns}
+
+The request handlers support two different message patterns.
+
+\subsubsection{Request Response}
+
+The client request handler sends a serialized request to the server request handler.
+
+\subsubsection{One Way}
+
+\subsection{Invocation Styles}
+
+The requestors support one synchronous and three asynchronous invocation styles.
+
+\subsubsection{Synchronous}
+
+\subsubsection{Poll Object}
+
+\subsubsection{Result Callback}
+
+\subsubsection{Fire and Forget}

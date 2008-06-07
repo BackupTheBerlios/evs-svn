@@ -1,4 +1,4 @@
-<\documentclass[a4paper]{article}
+\documentclass[a4paper]{article}
 \usepackage[english]{babel}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
@@ -52,18 +52,12 @@
 
 \clearpage
 
-
 \pagestyle{fancy}				
 \pagenumbering{arabic}				
 \lhead{\small{\textbf{Design Methods for Distributed Systems: } Architecture}}
 \rhead{\small{Page \thepage/\pageref{LastPage}}}
 \fancyfoot{}
 \tableofcontents
-
-
-
-
-
 
 \newpage
 \include{logical-view}
@@ -78,7 +72,7 @@
 	\hline
 	Programming Language & Java 5 & \url{http://java.sun.com/}\\
 	\hline
-	Web Services & Axis2 & \url{http://ws.apache.org/axis2/}\\
+	Web Services & Axis2 1.4 & \url{http://ws.apache.org/axis2/}\\
 	\hline
 	Unit Tests & JUnit 4 & \url{http://junit.org/}\\
 	\hline
@@ -90,7 +84,7 @@
 
 \subsection{Naming Rules}
 
-The top level package is "evs" and there is only one level of sub packages.\\
+The top level package is "evs" or "evsbsp" and there is only one level of sub packages.\\
 Interface names start with "I".\\
 Abstract class names start with "A".\\
 
@@ -98,21 +92,28 @@ Abstract class names start with "A".\\
 
 	\begin{tabular}{|l|l|}
 	\hline
-	evs.comm & communcation framework\\
+	evs.app\_client & application client\\
 	\hline
-	evs.entities & business entities\\
+	evs.app\_server & application server\\
 	\hline
-	evs.junit & JUnit tests\\
+	evs.axis & Axis2 request handling\\
+	\hline
+	evs.core & communcation framework\\
+	\hline
+	evs.exception & exceptions\\
+	\hline
+	evs.idl & interface definition language\\
+	\hline
+	evs.interfaces & interfaces\\
+	\hline
+	evs.main & main classes\\
+	\hline
+	evsbsp.junit & JUnit tests\\
 	\hline
 	\end{tabular}
 
-\section{Process View}
-
-The communication is based on Java sockets.
-
-\subsection{Request Handler}
-
-The request handlers 
+\newpage
+\include{process-view}
 
 \section{Physical View}
 
@@ -164,6 +165,8 @@ After the customer has successfully logged in and decided which products to add 
 	\begin{tabular}{|l|l|}
 	\hline
 	AOR & Absolute Object Reference\\
+	\hline
+	IDL & Interface Definition Language\\
 	\hline
 	IP & Internet Protocol\\
 	\hline
