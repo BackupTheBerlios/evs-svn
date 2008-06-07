@@ -74,6 +74,7 @@
             <classpath refid="classpath" />
             <formatter type="brief" usefile="false" />
             <test name="evsbsp.junit.InvocationTest" />
+            <test name="evsbsp.junit.LifecycleTest" />
             <test name="evsbsp.junit.ServerTest" />
             <test name="evsbsp.junit.ClientTest" />
         </junit>
