@@ -66,6 +66,15 @@ The response from the client request handler is marshalled and stored in the pol
 
 \subsubsection{Result Callback}
 
-
+The requestor creates a new result callback client request handler and passes an ACT to it.
+The result callback handler is started in a separate thread and sends the serialized request to the server request handler.
+After receiving the serialized response the result callback handler invokes the resultReturned method of the requestor with the ACT and the response.
+This resultReturned method looks up the callback for the ACT and invokes the callback with the unmarshalled response.
 
 \subsubsection{Fire and Forget}
+
+The requestor invokes the fireAndForget method of the client request handler and does not receive a result.
+
+\subsection{Peers}
+
+The peers can start one or more server request handlers in separate threads to act as servers without interfering with their client functionality.

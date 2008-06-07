@@ -1,5 +1,5 @@
 <project name="evs" default="all">
-    <property name="version" value="0.1"/>
+    <property name="version" value="1.0"/>
     <property name="axis.home" value="axis"/>
     <property name="src.dir" value="src"/>
     <property name="bin.dir" value="class"/>
@@ -61,11 +61,11 @@
     
     <target name="all" depends="dist"/>
 	
-	<target name="deploy-aar" depends="dist-aar">
+	<target name="deploy" depends="dist-aar">
 		<copy file="${dist.dir}/${aar.file}" todir="${deploy.dir}"/>
 	</target>
     
-	<target name="undeploy-aar">
+	<target name="undeploy">
 		<delete file="${deploy.dir}/${aar.file}"/>
 	</target>
     

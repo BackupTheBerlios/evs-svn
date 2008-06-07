@@ -3,11 +3,23 @@ The project provides the following ant targets.
 all
 
 	build all artifacts
+	
+deploy
 
+	deploy web services
+	
 test
 
 	run unit tests
 
+undeploy
+
+	undeploy web services
+
 clean
 
 	delete build artifacts
+
+The peer is started from the project directory with the following command.
+
+	java -cp dist/evs-1.0.jar evs.main.Peer port=31337
