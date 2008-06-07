@@ -19,21 +19,17 @@ import org.junit.Test;
 
 public class ClientTest {
 
-    Client client;
-    Peer peer;
-    IEcommerceOperations proxy;
+    private Client client;
+    private Peer peer;
+    private IEcommerceOperations proxy;
 
     public ClientTest () {
     }
 
     @Before
     public void setUp () {
-        String[] args = {};
-        peer = new Peer (args);
-        peer.run ();
+        peer = TestHelper.getPeer ();
         peer.processCommand ("register-object=evsbsp.server.Ecommerce");
-        peer.processCommand ("port=31337");
-        peer.processCommand ("listen");
         client = new Client ();
         proxy = client.getProxy ();
         try {
@@ -73,20 +69,20 @@ public class ClientTest {
             e.printStackTrace ();
         }
     }
-    
+
     @Test
     public void testOrder () {
         try {
-            List<Product> products = (List<Product>) ((InvocationObject) proxy.listProducts (new ACT ())).getReturnParam();
+            List<Product> products = (List<Product>) ((InvocationObject) proxy.listProducts (new ACT ())).getReturnParam ();
             Assert.assertTrue (client.login ("dirk", "0626775"));
             client.addProduct (products.get (1));
             client.addProduct (products.get (2));
             client.buyOrder ();
-            Customer customer = (Customer) ((InvocationObject) proxy.login ("dirk", "0626775", null)).getReturnParam();
+            Customer customer = (Customer) ((InvocationObject) proxy.login ("dirk", "0626775", null)).getReturnParam ();
             List<Order> orders = customer.getOrders ();
             Assert.assertEquals (orders.size (), 1);
             Assert.assertEquals (orders.get (0).getProducts ().size (), 2);
-            Assert.assertEquals (orders.get (0).getProducts ().get(0).getName (), "Quietscheente");
+            Assert.assertEquals (orders.get (0).getProducts ().get (0).getName (), "Quietscheente");
         } catch (NotSupportedException e) {
             e.printStackTrace ();
         }
