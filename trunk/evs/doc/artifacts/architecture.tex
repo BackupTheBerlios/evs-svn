@@ -9,6 +9,7 @@
 \usepackage{rotating}
 \usepackage{tabls} \setlength\tablinesep{3pt}
 \usepackage{url}
+\usepackage[bf]{caption}
 \usepackage{float}
 % new float environment
 
@@ -60,6 +61,23 @@
 \tableofcontents
 
 \newpage
+
+\section{Introduction}
+\subsection{Lab Content \& Purpose}
+
+In the course of this lab exercise a peer-based middleware based on the design and architecture described in \cite{zdun2008} was developed. For demonstration purposes a distributed sales system for an eCommerce company including functionalities for managing customers and products, authorization and ordering was implemented.
+
+\begin{figure}[ht!]
+	\centering\includegraphics[width=10cm]{architektur.png} 
+	\caption{Overall Architecture based on \cite{zdun2008}}
+	\label{fig:architecture}
+\end{figure}
+
+\subsection{Scope of this Document}
+The purpose of this document is the specification of the architecture of the developed middleware. Additionally a description of the provided distributed sales system as an example use case scenario as well a description of various provided unit tests is given. \\The document clearly focuses on architectural aspects and is not intended as a documentation of the source code, functions and parameters. For this purpose a separate Javadoc is provided.
+
+
+
 \include{logical-view}
 
 \section{Development View}
@@ -84,9 +102,11 @@
 
 \subsection{Naming Rules}
 
-The top level package is "evs" or "evsbsp" and there is only one level of sub packages.\\
-Interface names start with "I".\\
-Abstract class names start with "A".\\
+\begin{itemize}
+\item The top level package is ``evs'' (for the middleware implementation) or ``evsbsp'' (for the use case implementation) and there is only one level of sub packages.
+\item Interface names start with ``I''.
+\item Abstract class names start with ``A''.
+\end{itemize}
 
 \subsection{Packages}
 
@@ -115,7 +135,6 @@ Abstract class names start with "A".\\
 \newpage
 \include{process-view}
 
-\section{Physical View}
 
 \section{Scenarios}
 
@@ -160,23 +179,31 @@ After the customer has successfully logged in and decided which products to add 
 \subsubsection{Command Language}
 \subsubsection{Object System Layer}
 
+\clearpage
+\appendix
 \section{Abbreviations and Acronyms}
-
+\vspace{0.5cm}
 	\begin{tabular}{|l|l|}
 	\hline
 	ACT & Asynchronous Completion Token\\
 	\hline
 	AOR & Absolute Object Reference\\
 	\hline
-	IDL & Interface Definition Language\\
+	IDL & Interface Description Language\\
 	\hline
 	IP & Internet Protocol\\
+	\hline
+	SOAP & Simple Object Access Protocol\\
 	\hline
 	TCP & Transmission Control Protocol\\
 	\hline
 	\end{tabular}
 
-\newpage
+\vspace{1cm}
+
+\section{References}
+\renewcommand{\refname}{}
+\vspace{-1cm}
 \bibliographystyle{plain}
 \bibliography{bibliography}
 
