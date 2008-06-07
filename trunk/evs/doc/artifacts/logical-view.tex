@@ -1,8 +1,7 @@
 \section{Logical View}
 
+
 \subsection{Common}
-\subsubsection{Marshaller}
-The marshaller translates objects into sequences of bytes and vice versa. Every object that is passed to the marshaller, must at least implement the \texttt{Serializable} interface, provided by Java. Otherwise it is not guaranteed that the passed object can be transformed into a byte array. If neither the \texttt{Serializable}- nor the \texttt{Externilizable}-interface are implemented, a seperate marshaller is necessary, that possesses the ability to transform the data of the object into a byte array, despite the lack of the previously mentioned interfaces. The marshaller is implemented as a Singleton, because a peer owns a client and a server interface at the same time and on both sides it is necessary to either marshall or unmarshall a message. Both sides use the same marshaller that offers the required functionality.
 
 \subsubsection{Interface Description}
 The interface description is the source for generating the interfaces for client proxies and remote objects. For the purpose of defining such an interface description the syntax for a simple IDL (Interface Description Language) was created and a corresponding parser was developed. This syntax allows the definition of classes and exceptions in the following form:
@@ -26,16 +25,38 @@ The IDL-Parser \texttt{evs.idl.SimpleIDLParser} analyzes the file and generates 
 
 \begin{itemize}\itemsep0pt
 \item An interface for the operations provided by the Remote Object
-\item A ClientProxy implementing this interface for the client-side
+\item The basic structure of the Remote Object implementing this interface
+\item A Client Proxy implementing this interface for the client-side
 \item An Invoker implementing this interface for the server-side
 \item Custom-Type Exceptions
 \end{itemize}
 
+\subsubsection{Marshaller}
+For general marshalling purposes the class \texttt{evs.core.BasicMarshaller} is provided. The marshaller translates objects into sequences of bytes and vice versa. Every object that is passed to the marshaller, must at least implement the \texttt{Serializable} interface, provided by Java. Otherwise it is not guaranteed that the passed object can be transformed into a byte array. If neither the \texttt{Serializable}- nor the \texttt{Externilizable}-interface are implemented, a separate marshaller is necessary, that possesses the ability to transform the data of the object into a byte array, despite the lack of the previously mentioned interfaces. The marshaller is implemented as a Singleton, because a peer owns a client and a server interface at the same time and on both sides it is necessary to either marshall or unmarshall a message. Both sides use the same marshaller that offers the required functionality.
+
 \subsubsection{Absolute Object Reference}
-When a peer wants to invoke a remote object, it first needs to know where the remote object is located, hence which server request handler it has to direct the request to. The server request handler is identified by a hostname and a port, where it listens for incoming requests. The next important information the peer needs to know is the ID of the remote object that it wants to invoke, and the ID of the invoker that is behind the prior mentioned server request handler. The pattern \textit{Absolute Object Reference} uniquely identifies the invoker and the remote object. It contains the hostname and the port of the server request handler, the ID of the invoker and the ID of the remote object. If a peer has the AOR of a remote object it has all the information it needs to invoke it. 
+When a peer wants to invoke a remote object, it first needs to know where the remote object is located, hence which server request handler it has to direct the request to. The server request handler is identified by a hostname and a port, where it listens for incoming requests. The next important information the peer needs to know is the ID of the remote object that it wants to invoke, and the ID of the invoker that is behind the prior mentioned server request handler. The pattern \textit{Absolute Object Reference} uniquely identifies the invoker and the remote object. It contains the hostname and the port of the server request handler, the ID of the invoker and the ID of the remote object. If a peer has the AOR of a remote object it has all the information it needs to invoke it. \\
+The AOR is implemented in \texttt{evs.core.AOR} and contains the location of the remote object in the form of a \texttt{evs.interfaces.ILocation} (for which a \texttt{evs.core.WebLocation} implementation is provided) and the \textit{Object ID} implemented in the \texttt{evs.core.ObjectReference}.
 
 \subsubsection{ACT}
-An ACT is an asynchronous completion token. Clients can start several asynchronous requests at the same time. To give the client the ability to connect an incoming response to a request it sent, an ACT is used. It is passed to the client proxy as a parameter during invocation which passes the ACT further down to the requestor. The requestor serializes the ACT into the request sent. When the requestor receives a response it knows which ACT the answer belongs to and passes it back to the client. The client can now match the incoming response to the request with the corresponding ACT. 
+An \texttt{evs.core.ACT} is an asynchronous completion token. Clients can start several asynchronous requests at the same time. To give the client the ability to connect an incoming response to a request it sent, an ACT is used. It is passed to the client proxy as a parameter during invocation which passes the ACT further down to the requestor. The requestor serializes the ACT into the request sent. When the requestor receives a response it knows which ACT the answer belongs to and passes it back to the client. The client can now match the incoming response to the request with the corresponding ACT. 
+
+\subsubsection{Invocation Object}
+The necessary information for invoking a remote object is bundled in the \texttt{evs.core.InvocationObject} which provides an implementation of the \texttt{Externilizable}-interface for easy marshalling. This information includes:
+\begin{itemize}\itemsep0pt
+\item Absolute Object Reference
+\item the name of the operation
+\item a list of arguments
+\item the return parameter
+\item a remoting exception
+\item list of invocation contexts
+\end{itemize}
+
+\subsubsection{Remoting Errors}
+It is possible for Remote Objects to declare application-specific exceptions. These exceptions must inherit \texttt{evs.exception.RemotingException} and are transported back to the the client, where they are filtered and thrown as application-specific exceptions by the Client Proxy. All distribution-related exceptions are thrown as \texttt{evs.exception.NotSupportedException}. For internal differentiation of distribution-related exceptions by the middleware a range of \texttt{evs.exception.MiddlewareException}-subtypes was implemented in the \texttt{evs.exception}-package.
+
+\subsubsection{Interceptor Architecture}
+
 
 \subsubsection{Connection}
 
@@ -50,26 +71,66 @@ When acting as a client the peer creates client proxies and invokes their method
 The peers can be started in separate threads or as main programs.
 In both cases the actions of the peer are controlled by its input and output streams, which provide a command shell to the user.
 
-\subsection{Server}
+\subsection{Server-Side}
 
 \subsubsection{Remote Object}
 A remote object can be accessed by peers using its Absolute Object Reference. It usually provides some sort of functionality, that the peers want to utilize. For each remote object a corresponding invoker and a client proxy is generated according to the remote object's interface. The client is presented the same interface as the remote object's by its proxy.
 
+\begin{figure}[ht!]
+	\centering\includegraphics[width=5cm]{uml/Ecommerce.jpg} 
+	\caption{Ecommerce Remote Object}
+	\label{fig:ecommerce}
+\end{figure}
+
+\subsubsection{Lifecycle Management}
+
+\begin{figure}[ht!]
+	\centering\includegraphics[width=5cm]{uml/LifeCycleManager.jpg} 
+	\caption{Lifecycle Manager}
+	\label{fig:lifecycle}
+\end{figure}
+
+
 \subsubsection{Invoker}
 For each remote object a corresponding invoker is generated, as mentioned previously. The invoker gets its data for the actual invocation from the invocation dispatcher, which unmarshalls the received request and extracts the required information.
+
+\begin{figure}[ht!]
+	\centering\includegraphics[width=5cm]{uml/EcommerceInvoker.jpg} 
+	\caption{Ecommerce Invoker}
+	\label{fig:invoker}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering\includegraphics[width=5cm]{uml/InvocationDispatcher.jpg} 
+	\caption{Invocation Dispatcher}
+	\label{fig:dispatcher}
+\end{figure}
+
 
 \subsubsection{Server Request Handler}
 
 The server request handler receives request messages and dispatches them to the invokers.
 The server request handler sends response messages to the client request handlers.
 
-\subsection{Client}
+\begin{figure}[ht!]
+	\centering\includegraphics[width=5cm]{uml/ServerRequestHandler.jpg} 
+	\caption{Server Request Handler}
+	\label{fig:serverrequesthandler}
+\end{figure}
+
+\subsection{Client-Side}
 
 \subsubsection{Client Request Handler}
 
 The client request handler sends marshalled requests to the corresponding server request handler without interpreting the request.
 Depending on the invocation style the client waits to receive a response from the server or not.
 If the a marshalled response is received, then it is returned to the requestor without interpreting it.
+
+\begin{figure}[ht!]
+	\centering\includegraphics[width=5cm]{uml/ClientRequestHandler.jpg} 
+	\caption{Client Request Handler}
+	\label{fig:clientrequesthandler}
+\end{figure}
 
 \subsubsection{Requestor}
 The requestor receives the following data from the client proxy: an \texttt{InvocationObjec}, a boolean indicating, if the called function is \texttt{void}, an \texttt{ICallback} for the callback functionality of the \texttt{InvocationStyle.RESULT\_CALLBACK}, an \texttt{IACT} (an asynchronous completion token) and the \texttt{InvocationStyle} that is used for this invocation. At first the requestor calls every registered interceptor prior to invocation. Next it marshalls the \texttt{InvocationObject} to a byte array, in order to prepare it for transmission to the server request handler. Then the AOR (Absolute Object Reference) is extracted from the \texttt{InvocationObject}, so that the requstor can tell the request handler explicitly to which location the request has to be sent. In the next step the requestor distinguishes between the different \texttt{InvocationStyle}s:
@@ -84,10 +145,28 @@ The requestor receives the following data from the client proxy: an \texttt{Invo
 	The \texttt{RESULT\_CALLBACK} style implies, that after the request is sent, no one waits for a response. When the response arrives, the request handler calls a callback function to notify the requestor about it. In order to achieve this functionality, the requestor has a \texttt{Map<IACT, ICallback>} to keep track of the request and response messages. Each call is saved as a new entry in the map. The requestor creates a new \texttt{ResultCallbackHandler} object, which runs in its own thread. The request is ordinarily sent via the request handler. When the \texttt{ResultCallbackHandler} gets the response from the request handler, it calls a function in the requestor and passes the result as a byte array and the \texttt{ACT} (asynchronous completion token). The requestor unmarshalls the response, fetches the corresponding \texttt{ICallback} to the passed \texttt{ACT} and calls the \texttt{resultReturned} function of the \texttt{ICallback} with the response as parameter.
 \end{itemize}
 
+\begin{figure}[ht!]
+	\centering\includegraphics[width=5cm]{uml/Requestor.jpg} 
+	\caption{Requestor}
+	\label{fig:requestor}
+\end{figure}
 
 \subsubsection{Client Proxy}
 
 The client proxy implements the same interface as the remote object, so the client calls the client proxy as it would call the remote object directly. The proxy is generated automatically for each remote object. The client proxy handles the different \texttt{InvocationStyle}s. Independent of the chosen \texttt{InvocationStyle} the client proxy forwards the invocation to the requestor. It creates a new \texttt{InvocationObject} from the invocation of the client which is passed to the requestor. Furthermore a boolean, indicating wether the method called, has a return value or not, an \texttt{ICallback}, where the callback for the \texttt{InvocationStyle.RESULT\_CALLBACK} is set or not, an ACT (Asynchronous Completion Token) and the \texttt{InvocationStyle}, that was set prior to the invocation, are passed. The requestor now has all the information it needs for further processing.
+
+\begin{figure}[ht!]
+	\centering\includegraphics[width=5cm]{uml/Client.jpg} 
+	\caption{Ecommerce Client}
+	\label{fig:client}
+\end{figure}
+
+
+\begin{figure}[ht!]
+	\centering\includegraphics[width=5cm]{uml/EcommerceProxy.jpg} 
+	\caption{Ecommerce Proxy}
+	\label{fig:clientproxy}
+\end{figure}
 
 \subsection{Protocols}
 

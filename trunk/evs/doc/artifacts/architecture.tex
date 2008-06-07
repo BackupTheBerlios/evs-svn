@@ -112,23 +112,27 @@ The purpose of this document is the specification of the architecture of the dev
 
 	\begin{tabular}{|l|l|}
 	\hline
-	evs.app\_client & application client\\
+	\texttt{evs.axis} & Axis2 request handling\\
 	\hline
-	evs.app\_server & application server\\
+	\texttt{evs.core} & communcation framework\\
 	\hline
-	evs.axis & Axis2 request handling\\
+	\texttt{evs.exception} & remoting exceptions\\
 	\hline
-	evs.core & communcation framework\\
+	\texttt{evs.idl} & interface definition language\\
 	\hline
-	evs.exception & exceptions\\
+	\texttt{evs.interfaces} & interfaces for communication framework\\
 	\hline
-	evs.idl & interface definition language\\
+	\texttt{evs.main} & main classes\\
 	\hline
-	evs.interfaces & interfaces\\
+	\texttt{evsbsp.client} & client-part of the use case scenario\\
 	\hline
-	evs.main & main classes\\
+	\texttt{evsbsp.entities} & business entities of the use case scenario\\
 	\hline
-	evsbsp.junit & JUnit tests\\
+	\texttt{evsbsp.junit} & JUnit tests\\
+	\hline
+	\texttt{evsbsp.server} & server-part of the use case scenario\\
+	\hline
+	\texttt{dummy.*} & simple use case for unit testing the middleware\\
 	\hline
 	\end{tabular}
 
@@ -155,29 +159,9 @@ The server provides functionality to obtain all available products. The customer
 \subsubsection{Buy Order}
 After the customer has successfully logged in and decided which products to add to the order, he can call the servers buy order method, sending the generated order object and attached to it, the customer's object. The server adds the order to the customer whos ID corresponds to the ID received by the server, making it accessible in later sessions.
 
+
 \section{Rationale}
 
-\section{Extension 1}
-
-\subsection{Asynchronous Invocation}
-\subsubsection{Fire and Forget}
-\subsubsection{Poll Object}
-\subsubsection{Result Callback}
-
-\subsection{Interceptor Architecture}
-\subsubsection{Extension Patterns}
-
-\subsection{Activation of Distributed Objects}
-\subsubsection{Life Cycle Management Patterns}
-
-\subsection{Federation}
-\subsubsection{Configuration Groups}
-
-\section{Extension 2}
-\subsection{Dynamic Deployment}
-\subsubsection{Command}
-\subsubsection{Command Language}
-\subsubsection{Object System Layer}
 
 \clearpage
 \appendix
