@@ -1,8 +1,6 @@
 <project name="evs" default="all">
-    <property name="build.env" value="gerald"/>
-    <property file="build-${build.env}.properties"/>
     <property name="version" value="0.1"/>
-    
+    <property name="axis.home" value="axis"/>
     <property name="src.dir" value="src"/>
     <property name="bin.dir" value="class"/>
     <property name="doc.dir" value="doc"/>
@@ -15,9 +13,8 @@
     <property name="deploy.dir" value="${axis.home}/repository/services"/>
 	
     <path id="classpath">
-        <fileset dir="${lib.dir}">
-            <include name="**/*.jar"/>
-        </fileset>
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+        <fileset dir="${axis.home}" includes="lib/*.jar"/>
         <pathelement location="${bin.dir}"/>
     </path>
 	
